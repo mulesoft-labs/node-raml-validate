@@ -1,0 +1,33 @@
+{
+  "name": "raml-validate",
+  "version": "0.0.0",
+  "description": "Strict validation of RAML parameters",
+  "main": "raml-validate.js",
+  "scripts": {
+    "test": "jshint *.js && istanbul cover node_modules/mocha/bin/_mocha -- -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/blakeembrey/raml-validate.git"
+  },
+  "keywords": [
+    "raml",
+    "schema",
+    "validation"
+  ],
+  "author": {
+    "name": "Blake Embrey",
+    "email": "hello@blakeembrey.com",
+    "url": "http://blakeembrey.me"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blakeembrey/raml-validate/issues"
+  },
+  "homepage": "https://github.com/blakeembrey/raml-validate",
+  "devDependencies": {
+    "istanbul": "^0.2.11",
+    "jshint": "^2.5.1",
+    "mocha": "^1.20.1"
+  }
+}
