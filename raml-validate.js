@@ -1,9 +1,14 @@
+/**
+ * `Object.prototype.toString` as a function.
+ *
+ * @type {Function}
+ */
 var toString = Function.prototype.call.bind(Object.prototype.toString);
 
 /**
  * Check the value is a valid date.
  *
- * @param  {String}  check
+ * @param  {Date}    check
  * @return {Boolean}
  */
 var isDate = function (check) {
@@ -11,9 +16,10 @@ var isDate = function (check) {
 };
 
 /**
- * Check
- * @param  {[type]}  check [description]
- * @return {Boolean}       [description]
+ * Check if the value is a boolean.
+ *
+ * @param  {Boolean}  check
+ * @return {Boolean}
  */
 var isBoolean = function (check) {
   return typeof check === 'boolean';
@@ -32,7 +38,7 @@ var isString = function (check) {
 /**
  * Check if the value is an integer.
  *
- * @param  {String}  check
+ * @param  {Number}  check
  * @return {Boolean}
  */
 var isInteger = function (check) {
@@ -42,7 +48,7 @@ var isInteger = function (check) {
 /**
  * Check if the value is a number.
  *
- * @param  {String}  check
+ * @param  {Number}  check
  * @return {Boolean}
  */
 var isNumber = function (check) {
@@ -50,50 +56,72 @@ var isNumber = function (check) {
 };
 
 /**
- * Check a number is between two values.
+ * Check whether the value is a file.
+ *
+ * @param  {*}       check
+ * @return {Boolean}
+ */
+var isFile = function (check) {
+  return typeof check === 'string' || typeof check === 'object';
+};
+
+/**
+ * Check a number is not smaller than the minimum.
  *
  * @param  {Number}   min
- * @param  {Number}   max
  * @return {Function}
  */
-var isNumberBetween = function (min, max) {
-  // Sanitize min and max values.
-  max = max == null ?  Infinity : max;
-  min = min == null ? -Infinity : min;
-
+var isMinimum = function (min) {
   return function (check) {
-    return check >= min && check <= max;
+    return check >= min;
   };
 };
 
 /**
- * Check a string length is between two values.
+ * Check a number doesn't exceed the maximum.
  *
- * @param  {Number}   min
- * @param  {Number}   max
- * @return {Function}
+ * @param  {Number}  max
+ * @return {Boolean}
  */
-var isLengthBetween = function (min, max) {
-  // Sanitize min and max values.
-  max = max == null ?  Infinity : max;
-  min = min == null ? -Infinity : min;
-
+var isMaximum = function (max) {
   return function (check) {
-    return check.length >= min && check.length <= max;
+    return check <= max;
   };
 };
 
 /**
- * Check a value is equal to anything in an enum.
+ * Check a string is not smaller than a minimum length.
+ *
+ * @param  {Number}  min
+ * @return {Boolean}
+ */
+var isMinimumLength = function (min) {
+  return function (check) {
+    return check.length >= min;
+  };
+};
+
+/**
+ * Check a string does not exceed a maximum length.
+ *
+ * @param  {Number}  max
+ * @return {Boolean}
+ */
+var isMaximumLength = function (max) {
+  return function (check) {
+    return check.length <= max;
+  };
+};
+
+/**
+ * Check a value is equal to anything in an array.
  *
  * @param  {Array}    values
  * @return {Function}
  */
 var isEnum = function (values) {
   return function (check) {
-    return values.some(function (value) {
-      return check === value;
-    });
+    return values.indexOf(check) > -1;
   };
 };
 
@@ -108,83 +136,44 @@ var isPattern = function (pattern) {
     pattern = new RegExp(pattern);
   }
 
-  return function (check) {
-    return pattern.test(check);
-  };
-};
-
-var TYPE_VALIDATION = {
-  date:    isDate,
-  number:  isNumber,
-  integer: isInteger,
-  boolean: isBoolean,
-  string:  isString
+  return pattern.test.bind(pattern);
 };
 
 /**
- * Provide a validation function that accepts the schema and returns a reusable
- * validation function.
+ * Transform arguments into an object.
  *
- * @param  {Object}   params
- * @return {Function}
+ * @param  {Boolean} valid
+ * @param  {String}  rule
+ * @param  {*}       value
+ * @param  {String}  key
+ * @return {Object}
  */
-exports = module.exports = function (params) {
-  var validations = {};
-
-  // Convert all parameters into validation functions.
-  Object.keys(params).forEach(function (param) {
-    validations[param] = exports.rule(params[param]);
-  });
-
-  /**
-   * The returned function accepts an object to be validated.
-   *
-   * @param  {Object}  obj
-   * @return {Boolean}
-   */
-  return function (obj) {
-    obj = obj || {};
-
-    return Object.keys(validations).every(function (validation) {
-      return validations[validation](obj[validation]);
-    });
-  };
+var toValidationObject = function (valid, rule, value, key) {
+  return { valid: valid, rule: rule, value: value, key: key };
 };
 
 /**
- * Convert a single rule into a validation function.
+ * Convert a rules object into a simple validation function.
  *
  * @param  {Object}   rule
  * @return {Function}
  */
-exports.rule = function (rule) {
-  var fns  = [];
-  var type = TYPE_VALIDATION[rule.type] ? rule.type : 'string';
+var toValidation = function (config, rules, types) {
+  var fns = [];
 
-  // Push the type validation onto the stack.
-  fns.push(TYPE_VALIDATION[type]);
-
-  // Number validations come with `minimum` and `maximum`.
-  if (type === 'number' || type === 'integer') {
-    if (rule.minimum || rule.maximum) {
-      fns.push(isNumberBetween(rule.minimum, rule.maximum));
-    }
+  // Push the type validation onto the stack first.
+  if (typeof types[config.type] === 'function') {
+    fns.push(['type', types[config.type]]);
   }
 
-  // String validations have more functionality built in.
-  if (type === 'string') {
-    if (Array.isArray(rule.enum)) {
-      fns.push(isEnum(rule.enum));
+  // Iterate over all of the keys and dynamically push validation rules.
+  Object.keys(config).filter(function (rule) {
+    return rule !== 'type' && rule !== 'type';
+  }).forEach(function (rule) {
+    if (typeof rules[rule] === 'function') {
+      fns.push([rule, rules[rule](config[rule], rule)]);
     }
-
-    if (rule.pattern) {
-      fns.push(isPattern(rule.pattern));
-    }
-
-    if (rule.minLength || rule.maxLength) {
-      fns.push(isLengthBetween(rule.minLength, rule.maxLength));
-    }
-  }
+  });
 
   /**
    * Run every validation that has been attached.
@@ -192,29 +181,140 @@ exports.rule = function (rule) {
    * @param  {String}  value
    * @return {Boolean}
    */
-  var isValid = function (value) {
-    return fns.every(function (fn) {
-      return fn(value);
+  var isValid = function (value, key, object) {
+    var rule;
+
+    // Check every validation rule for validity.
+    var valid = fns.every(function (validation) {
+      var valid = validation[1](value, key, object);
+
+      if (!valid) {
+        rule = validation[0];
+      }
+
+      return valid;
     });
+
+    return toValidationObject(valid, rule, value, key);
   };
 
   /**
-   * Return a function that returns a boolean based on the validation rules.
+   * Returns a boolean based on the previous validation rules.
    *
    * @param  {String}  value
+   * @param  {String}  key
+   * @param  {Object}  object
    * @return {Boolean}
    */
-  return function (value) {
-    // Short circuit validation if the value is allowed to be empty (and is).
-    if (!rule.required && value == null) {
-      return true;
+  return function (value, key, object) {
+    // If the value is empty, validate based on whether it was required.
+    if (value == null) {
+      return toValidationObject(!config.required, 'required', value, key);
     }
 
-    // Check repeated values.
-    if (rule.repeat) {
-      return Array.isArray(value) && value.every(isValid);
+    // Validate an array of values.
+    if (config.repeat) {
+      if (Array.isArray(value)) {
+        for (var i = 0; i < value.length; i++) {
+          var validity = isValid(value[i], key, object);
+
+          if (!validity.valid) {
+            return validity;
+          }
+        }
+
+        return toValidationObject(true, 'repeat', value, key);
+      }
+
+      return toValidationObject(false, 'repeat', value, key);
     }
 
-    return isValid(value);
+    return isValid(value, key, object);
   };
+};
+
+/**
+ * Every time you require the module you're expected to call it as a function
+ * to create a new instance. This is to ensure two modules can't make competing
+ * changes with their own validation rules.
+ *
+ * @return {Function}
+ */
+module.exports = function () {
+  /**
+   * Return a validation function that validates a model based on the schema.
+   *
+   * @param  {Object}   schema
+   * @return {Function}
+   */
+  var validate = function (schema) {
+    var validations = {};
+
+    // Convert all parameters into validation functions.
+    Object.keys(schema).forEach(function (param) {
+      var config = schema[param];
+
+      validations[param] = toValidation(config, validate.RULES, validate.TYPES);
+    });
+
+    /**
+     * The function accepts an object to be validated. All rules are already
+     * precompiled.
+     *
+     * @param  {Object}  model
+     * @return {Boolean}
+     */
+    return function (model) {
+      model = model || {};
+
+      // Map all validations to their object and filter for failures.
+      var errors = Object.keys(validations).map(function (param) {
+        var value      = model[param];
+        var validation = validations[param];
+
+        // Return the validation result.
+        return validation(value, param, model);
+      }).filter(function (validation) {
+        return !validation.valid;
+      });
+
+      return {
+        valid:  errors.length === 0,
+        errors: errors
+      };
+    };
+  };
+
+  /**
+   * Provide validation of types.
+   *
+   * @type {Object}
+   */
+  validate.TYPES = {
+    date:    isDate,
+    number:  isNumber,
+    integer: isInteger,
+    boolean: isBoolean,
+    string:  isString,
+    file:    isFile
+  };
+
+  /**
+   * Provide overridable validation of parameters.
+   *
+   * @type {Object}
+   */
+  validate.RULES = {
+    minimum:   isMinimum,
+    maximum:   isMaximum,
+    minLength: isMinimumLength,
+    maxLength: isMaximumLength,
+    enum:      isEnum,
+    pattern:   isPattern
+  };
+
+  /**
+   * Return the validate function.
+   */
+  return validate;
 };
