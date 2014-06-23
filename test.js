@@ -251,6 +251,12 @@ var TESTS = [
     false,
     [{ valid: false, rule: 'type', value: '123', key: 'param' }]
   ],
+  [
+    { param: { type: 'date' } },
+    { param: new Date('abc') },
+    false,
+    [{ valid: false, rule: 'type', value: new Date('abc'), key: 'param' }]
+  ],
   /*
    * Boolean validation. This type is only used for sanitization.
    */

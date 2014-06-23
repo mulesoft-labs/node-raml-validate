@@ -12,7 +12,7 @@ var toString = Function.prototype.call.bind(Object.prototype.toString);
  * @return {Boolean}
  */
 var isDate = function (check) {
-  return toString(check) === '[object Date]';
+  return toString(check) === '[object Date]' && !isNaN(check.getTime());
 };
 
 /**
