@@ -31,12 +31,11 @@ var user = validate({
   }
 });
 
-// Valid a user model.
+// Validate a user model.
 user({
   username: 'blakeembrey',
   password: 'super secret password'
-});
-//=> { valid: true, errors: [] }
+}); //=> { valid: true, errors: [] }
 ```
 
 ### Getting validation errors
