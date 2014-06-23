@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/blakeembrey/raml-validate",
   "devDependencies": {
+    "chai": "^1.9.1",
     "istanbul": "^0.2.11",
     "jshint": "^2.5.1",
     "mocha": "^1.20.1"

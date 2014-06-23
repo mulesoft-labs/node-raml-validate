@@ -1,6 +1,6 @@
 /* global describe, it */
 var util         = require('util');
-var assert       = require('assert');
+var expect       = require('chai').expect;
 var ramlValidate = require('./');
 var validate     = ramlValidate();
 
@@ -527,8 +527,8 @@ describe('raml-validate', function () {
       it(description, function () {
         var validity = validate(params)(object);
 
-        assert.equal(validity.valid, valid);
-        assert.deepEqual(validity.errors, errors);
+        expect(validity.valid).to.equal(valid);
+        expect(validity.errors).to.deep.equal(errors);
       });
     });
   });
@@ -548,8 +548,8 @@ describe('raml-validate', function () {
       });
 
       // Assert the type validation is actually working.
-      assert.equal(schema({ param: 'test' }).valid, true);
-      assert.equal(schema({ param: 'testing' }).valid, false);
+      expect(schema({ param: 'test' }).valid).to.be.true;
+      expect(schema({ param: 'testing' }).valid).to.be.false;
     });
 
     it('should be able to add a new validation rule', function () {
@@ -573,10 +573,10 @@ describe('raml-validate', function () {
       });
 
       // Assert our models validate as expected.
-      assert.equal(schema({}).valid, true);
-      assert.equal(schema({ lng: '123' }).valid, false);
-      assert.equal(schema({ lng: '123' }).valid, false);
-      assert.equal(schema({ lat: '123', lng: '123' }).valid, true);
+      expect(schema({}).valid).to.be.true;
+      expect(schema({ lng: '123' }).valid).to.be.false;
+      expect(schema({ lng: '123' }).valid).to.be.false;
+      expect(schema({ lat: '123', lng: '123' }).valid).to.be.true;
     });
 
     it('should only add rules to a single instance', function () {
@@ -585,8 +585,8 @@ describe('raml-validate', function () {
 
       var newValidate = ramlValidate();
 
-      assert.ok(!newValidate.TYPES.test);
-      assert.ok(!newValidate.RULES.test);
+      expect(newValidate.TYPES.test).to.not.exist;
+      expect(newValidate.RULES.test).to.not.exist;
     });
   });
 });
