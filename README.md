@@ -82,4 +82,4 @@ validate.RULES.requires = function (property) {
 
 ## License
 
-MIT
+Apache 2.0

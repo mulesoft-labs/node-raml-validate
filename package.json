@@ -8,23 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/blakeembrey/raml-validate.git"
+    "url": "git://github.com/mulesoft/node-raml-validate.git"
   },
   "keywords": [
     "raml",
     "schema",
     "validation"
   ],
-  "author": {
-    "name": "Blake Embrey",
-    "email": "hello@blakeembrey.com",
-    "url": "http://blakeembrey.me"
-  },
+  "author": "MuleSoft, Inc.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/blakeembrey/raml-validate/issues"
+    "url": "https://github.com/mulesoft/node-raml-validate/issues"
   },
-  "homepage": "https://github.com/blakeembrey/raml-validate",
+  "homepage": "https://github.com/mulesoft/node-raml-validate",
   "devDependencies": {
     "chai": "^1.9.1",
     "istanbul": "^0.2.11",
