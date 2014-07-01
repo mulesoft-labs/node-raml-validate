@@ -46,9 +46,33 @@ All validation errors can be retrieved from the `errors` property on the returne
 [{ rule: 'minLength', value: 'test', key: 'password' }]
 ```
 
+### Required validation
+
+If the validation does not set `required` to be true, a `null` or `undefined` value will be valid.
+
+### Repeated validation
+
+The module has core support for repeated properties in the form of an array. If the validation is set to `repeat`, but does not receive an array - validation will fail with a `repeat` error.
+
+### Multiple types
+
+The module supports multiple types according to the [RAML spec](https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#named-parameters-with-multiple-types). When multiple types are specified, it'll run the validation against the matching type.
+
+```javascript
+validate({
+  file: [{
+    type: 'string'
+  }, {
+    type: 'file'
+  }]
+});
+```
+
+If any of the types are set to `repeat`, it'll only run that validation object when every value in the array is of the correct type - otherwise you will receive a type error.
+
 ### Adding new types
 
-New type validations can be added by setting the corresponding property on the `validate.TYPES` object. For example, file validation to support only buffers maybe added by doing:
+New type validations can be added by setting the corresponding property on the `validate.TYPES` object. For example, adding file validation to support buffers can be added by doing:
 
 ```javascript
 validate.TYPES.file = function (value) {

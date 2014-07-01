@@ -402,13 +402,13 @@ var TESTS = [
     { param: { type: 'integer', repeat: true } },
     { param: [1, '2'] },
     false,
-    [{ valid: false, rule: 'type', value: '2', key: 'param' }]
+    [{ valid: false, rule: 'type', value: [1, '2'], key: 'param' }]
   ],
   [
     { param: { type: 'integer', repeat: true } },
     { param: [1, 'a'] },
     false,
-    [{ valid: false, rule: 'type', value: 'a', key: 'param' }]
+    [{ valid: false, rule: 'type', value: [1, 'a'], key: 'param' }]
   ],
   [
     { param: { type: 'number', repeat: true } },
@@ -426,13 +426,13 @@ var TESTS = [
     { param: { type: 'number', repeat: true } },
     { param: ['1.5', 2] },
     false,
-    [{ valid: false, rule: 'type', value: '1.5', key: 'param' }]
+    [{ valid: false, rule: 'type', value: ['1.5', 2], key: 'param' }]
   ],
   [
     { param: { type: 'number', repeat: true } },
     { param: [1.5, 'a'] },
     false,
-    [{ valid: false, rule: 'type', value: 'a', key: 'param' }]
+    [{ valid: false, rule: 'type', value: [1.5, 'a'], key: 'param' }]
   ],
   /**
    * More advanced validation use-cases.
@@ -510,6 +510,150 @@ var TESTS = [
       { valid: false, rule: 'minLength', value: 'abc', key: 'username' },
       { valid: false, rule: 'minLength', value: '123', key: 'password' }
     ]
+  ],
+  /**
+   * Multiple validation types.
+   */
+  [
+    {
+      param: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 123
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 'test'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 123.5
+    },
+    false,
+    [{ valid: false, rule: 'type', value: 123.5, key: 'param' }]
+  ],
+  /**
+   * Multiple types with repeat support.
+   */
+  [
+    {
+      param: [
+        {
+          type: 'string',
+          repeat: true
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 'test'
+    },
+    false,
+    [{ valid: false, rule: 'type', value: 'test', key: 'param' }]
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string',
+          repeat: true
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: [123]
+    },
+    false,
+    [{ valid: false, rule: 'type', value: [123], key: 'param' }]
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string',
+          repeat: true
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: ['test']
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string',
+          repeat: true
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 123
+    },
+    true,
+    []
+  ],
+  /**
+   * Unknown types should be invalid.
+   */
+  [
+    {
+      param: {
+        type: 'unknown'
+      }
+    },
+    {
+      param: 'abc'
+    },
+    false,
+    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
   ]
 ];
 

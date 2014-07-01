@@ -130,7 +130,7 @@ var isPattern = function (pattern) {
 };
 
 /**
- * Transform arguments into an object.
+ * Convert arguments into an object.
  *
  * @param  {Boolean} valid
  * @param  {String}  rule
@@ -143,24 +143,18 @@ var toValidationObject = function (valid, rule, value, key) {
 };
 
 /**
- * Convert a rules object into a simple validation function.
+ * Convert a single config into a function.
  *
- * @param  {Object}   rule
+ * @param  {Object}   config
+ * @param  {Object}   rules
  * @return {Function}
  */
-var toValidation = function (config, rules, types) {
+var toValidationFunction = function (config, rules) {
   var fns = [];
 
-  // Push the type validation onto the stack first.
-  if (typeof types[config.type] === 'function') {
-    fns.push(['type', types[config.type]]);
-  }
-
   // Iterate over all of the keys and dynamically push validation rules.
-  Object.keys(config).filter(function (rule) {
-    return rule !== 'type' && rule !== 'type';
-  }).forEach(function (rule) {
-    if (typeof rules[rule] === 'function') {
+  Object.keys(config).forEach(function (rule) {
+    if (rules.hasOwnProperty(rule)) {
       fns.push([rule, rules[rule](config[rule], rule)]);
     }
   });
@@ -168,58 +162,113 @@ var toValidation = function (config, rules, types) {
   /**
    * Run every validation that has been attached.
    *
-   * @param  {String}  value
-   * @return {Boolean}
-   */
-  var isValid = function (value, key, object) {
-    var rule;
-
-    // Check every validation rule for validity.
-    var valid = fns.every(function (validation) {
-      var valid = validation[1](value, key, object);
-
-      if (!valid) {
-        rule = validation[0];
-      }
-
-      return valid;
-    });
-
-    return toValidationObject(valid, rule, value, key);
-  };
-
-  /**
-   * Returns a boolean based on the previous validation rules.
-   *
-   * @param  {String}  value
-   * @param  {String}  key
-   * @param  {Object}  object
-   * @return {Boolean}
+   * @param  {String} value
+   * @param  {String} value
+   * @param  {Object} object
+   * @return {Object}
    */
   return function (value, key, object) {
-    // If the value is empty, validate based on whether it was required.
-    if (value == null) {
-      return toValidationObject(!config.required, 'required', value, key);
+    // Run each of the validations returning early when something fails.
+    for (var i = 0; i < fns.length; i++) {
+      var valid = fns[i][1](value, key, object);
+
+      if (!valid) {
+        return toValidationObject(false, fns[i][0], value, key);
+      }
     }
 
-    // Validate an array of values.
+    return toValidationObject(true, null, value, key);
+  };
+};
+
+/**
+ * Convert a rules object into a simple validation function.
+ *
+ * @param  {Object}   configs
+ * @param  {Object}   rules
+ * @param  {Object}   types
+ * @return {Function}
+ */
+var toValidation = function (configs, rules, types) {
+  // Initialize the configs to an array if they aren't already.
+  configs = Array.isArray(configs) ? configs : [configs];
+
+  var isOptional        = !configs.length;
+  var simpleValidations = [];
+  var repeatValidations = [];
+
+  // Support multiple type validations.
+  configs.forEach(function (config) {
+    var validation = [config.type, toValidationFunction(config, rules)];
+
+    // Allow short-circuiting of non-required values.
+    if (!config.required) {
+      isOptional = true;
+    }
+
+    // Push validations into each stack depending on the "repeat".
     if (config.repeat) {
-      if (Array.isArray(value)) {
-        for (var i = 0; i < value.length; i++) {
-          var validity = isValid(value[i], key, object);
+      repeatValidations.push(validation);
+    } else {
+      simpleValidations.push(validation);
+    }
+  });
 
-          if (!validity.valid) {
-            return validity;
-          }
-        }
+  /**
+   * Validate a value based on "type" and "repeat".
+   *
+   * @param  {*}      value
+   * @param  {String} key
+   * @param  {Object} object
+   * @return {Object}
+   */
+  return function (value, key, object) {
+    // Short-circuit validation if the value is `null`.
+    if (value == null) {
+      return toValidationObject(isOptional, 'required', value, key);
+    }
 
-        return toValidationObject(true, 'repeat', value, key);
+    // Switch validation type depending on if the value is an array or not.
+    var isArray = Array.isArray(value);
+
+    // Select the validation stack to use based on the (repeated) value.
+    var values      = isArray ? value : [value];
+    var validations = isArray ? repeatValidations : simpleValidations;
+
+    // Set the initial response to be an error.
+    var response = toValidationObject(
+      false, validations.length ? 'type' : 'repeat', value, key
+    );
+
+    // Iterate over each value and test using type validation.
+    validations.some(function (validation) {
+      // Non-existant types should always be invalid.
+      if (!types.hasOwnProperty(validation[0])) {
+        return false;
       }
 
-      return toValidationObject(false, 'repeat', value, key);
-    }
+      // Check all the types match. If they don't, attempt another validation.
+      var isType = values.every(function (value) {
+        return types[validation[0]](value, key, object);
+      });
 
-    return isValid(value, key, object);
+      // Skip to the next check if not all types match.
+      if (!isType) {
+        return false;
+      }
+
+      // When every value is the correct type, run the validation on each value
+      // and break the loop if we get a failure.
+      values.every(function (value) {
+        return (response = validation[1](value, key, object)).valid;
+      });
+
+      // Always break the loop when the type was successful. If anything has
+      // failed, `response` will have been set to the invalid object.
+      return true;
+    });
+
+    return response;
   };
 };
 
@@ -243,8 +292,10 @@ module.exports = function () {
     // Convert all parameters into validation functions.
     Object.keys(schema).forEach(function (param) {
       var config = schema[param];
+      var rules  = validate.RULES;
+      var types  = validate.TYPES;
 
-      validations[param] = toValidation(config, validate.RULES, validate.TYPES);
+      validations[param] = toValidation(config, rules, types);
     });
 
     /**
