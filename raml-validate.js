@@ -56,16 +56,6 @@ var isNumber = function (check) {
 };
 
 /**
- * Check whether the value is a file.
- *
- * @param  {*}       check
- * @return {Boolean}
- */
-var isFile = function (check) {
-  return typeof check === 'string' || typeof check === 'object';
-};
-
-/**
  * Check a number is not smaller than the minimum.
  *
  * @param  {Number}   min
@@ -295,8 +285,7 @@ module.exports = function () {
     number:  isNumber,
     integer: isInteger,
     boolean: isBoolean,
-    string:  isString,
-    file:    isFile
+    string:  isString
   };
 
   /**
