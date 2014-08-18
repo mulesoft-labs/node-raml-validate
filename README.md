@@ -1,5 +1,9 @@
 # RAML Validate
 
+[![NPM version][npm-image]][npm-url]
+[![Build status][travis-image]][travis-url]
+[![Test coverage][coveralls-image]][coveralls-url]
+
 Strict and pluginable validation of [RAML parameters](https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#named-parameters).
 
 ## Installation
@@ -107,3 +111,10 @@ validate.RULES.requires = function (property) {
 ## License
 
 Apache 2.0
+
+[npm-image]: https://img.shields.io/npm/v/raml-validate.svg?style=flat
+[npm-url]: https://npmjs.org/package/raml-validate
+[travis-image]: https://img.shields.io/travis/mulesoft/node-raml-validate.svg?style=flat
+[travis-url]: https://travis-ci.org/mulesoft/node-raml-validate
+[coveralls-image]: https://img.shields.io/coveralls/mulesoft/node-raml-validate.svg?style=flat
+[coveralls-url]: https://coveralls.io/r/mulesoft/node-raml-validate?branch=master
