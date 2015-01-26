@@ -42,6 +42,8 @@ user({
 }); //=> { valid: true, errors: [] }
 ```
 
+**Module does not currently support [wild-card parameters](https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#headers)**
+
 ### Getting validation errors
 
 All validation errors can be retrieved from the `errors` property on the returned object. If `valid === false`, the errors will be set to an array. This can be useful for generating error messages for the client.
