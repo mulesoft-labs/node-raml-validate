@@ -12,6 +12,15 @@ var validate     = ramlValidate();
  */
 var TESTS = [
   /**
+   * Empty.
+   */
+  [
+    {},
+    {},
+    true,
+    []
+  ],
+  /**
    * String validation.
    */
   [
