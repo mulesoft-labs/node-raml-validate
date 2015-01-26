@@ -1,9 +1,4 @@
-/**
- * `Object.prototype.toString` as a function.
- *
- * @type {Function}
- */
-var toString = Function.prototype.call.bind(Object.prototype.toString);
+var toString = Object.prototype.toString;
 
 /**
  * Check the value is a valid date.
@@ -11,9 +6,9 @@ var toString = Function.prototype.call.bind(Object.prototype.toString);
  * @param  {Date}    check
  * @return {Boolean}
  */
-var isDate = function (check) {
-  return toString(check) === '[object Date]' && !isNaN(check.getTime());
-};
+function isDate (check) {
+  return toString.call(check) === '[object Date]' && !isNaN(check.getTime());
+}
 
 /**
  * Check if the value is a boolean.
@@ -21,9 +16,9 @@ var isDate = function (check) {
  * @param  {Boolean}  check
  * @return {Boolean}
  */
-var isBoolean = function (check) {
+function isBoolean (check) {
   return typeof check === 'boolean';
-};
+}
 
 /**
  * Check the value is a string.
@@ -31,9 +26,9 @@ var isBoolean = function (check) {
  * @param  {String}  check
  * @return {Boolean}
  */
-var isString = function (check) {
+function isString (check) {
   return typeof check === 'string';
-};
+}
 
 /**
  * Check if the value is an integer.
@@ -41,9 +36,9 @@ var isString = function (check) {
  * @param  {Number}  check
  * @return {Boolean}
  */
-var isInteger = function (check) {
+function isInteger (check) {
   return typeof check === 'number' && check % 1 === 0;
-};
+}
 
 /**
  * Check if the value is a number.
@@ -51,9 +46,9 @@ var isInteger = function (check) {
  * @param  {Number}  check
  * @return {Boolean}
  */
-var isNumber = function (check) {
+function isNumber (check) {
   return typeof check === 'number' && isFinite(check);
-};
+}
 
 /**
  * Check a number is not smaller than the minimum.
@@ -61,11 +56,11 @@ var isNumber = function (check) {
  * @param  {Number}   min
  * @return {Function}
  */
-var isMinimum = function (min) {
+function isMinimum (min) {
   return function (check) {
     return check >= min;
   };
-};
+}
 
 /**
  * Check a number doesn't exceed the maximum.
@@ -73,35 +68,35 @@ var isMinimum = function (min) {
  * @param  {Number}  max
  * @return {Boolean}
  */
-var isMaximum = function (max) {
+function isMaximum (max) {
   return function (check) {
     return check <= max;
   };
-};
+}
 
 /**
- * Check a string is not smaller than a minimum length.
+ * Check a string is not smaller than length.
  *
  * @param  {Number}  min
  * @return {Boolean}
  */
-var isMinimumLength = function (min) {
+function isMinimumLength (min) {
   return function (check) {
-    return check.length >= min;
+    return Buffer.byteLength(check) >= min;
   };
-};
+}
 
 /**
- * Check a string does not exceed a maximum length.
+ * Check a string does not exceed length.
  *
  * @param  {Number}  max
  * @return {Boolean}
  */
-var isMaximumLength = function (max) {
+function isMaximumLength (max) {
   return function (check) {
-    return check.length <= max;
+    return Buffer.byteLength(check) <= max;
   };
-};
+}
 
 /**
  * Check a value is equal to anything in an array.
@@ -109,11 +104,11 @@ var isMaximumLength = function (max) {
  * @param  {Array}    values
  * @return {Function}
  */
-var isEnum = function (values) {
+function isEnum (values) {
   return function (check) {
     return values.indexOf(check) > -1;
   };
-};
+}
 
 /**
  * Check if a pattern matches the value.
@@ -121,13 +116,13 @@ var isEnum = function (values) {
  * @param  {(String|RegExp)} pattern
  * @return {Function}
  */
-var isPattern = function (pattern) {
-  if (toString(pattern) !== '[object RegExp]') {
+function isPattern (pattern) {
+  if (toString.call(pattern) !== '[object RegExp]') {
     pattern = new RegExp(pattern);
   }
 
   return pattern.test.bind(pattern);
-};
+}
 
 /**
  * Convert arguments into an object.
@@ -138,9 +133,9 @@ var isPattern = function (pattern) {
  * @param  {String}  key
  * @return {Object}
  */
-var toValidationObject = function (valid, rule, value, key) {
+function toValidationObject (valid, rule, value, key) {
   return { valid: valid, rule: rule, value: value, key: key };
-};
+}
 
 /**
  * Convert a single config into a function.
@@ -149,10 +144,10 @@ var toValidationObject = function (valid, rule, value, key) {
  * @param  {Object}   rules
  * @return {Function}
  */
-var toValidationFunction = function (config, rules) {
+function toValidationFunction (config, rules) {
   var fns = [];
 
-  // Iterate over all of the keys and dynamically push validation rules.
+  // Iterate over the keys and dynamically push validation rules.
   Object.keys(config).forEach(function (rule) {
     if (rules.hasOwnProperty(rule)) {
       fns.push([rule, rules[rule](config[rule], rule)]);
@@ -160,7 +155,7 @@ var toValidationFunction = function (config, rules) {
   });
 
   /**
-   * Run every validation that has been attached.
+   * Run every validation.
    *
    * @param  {String} value
    * @param  {String} value
@@ -168,7 +163,7 @@ var toValidationFunction = function (config, rules) {
    * @return {Object}
    */
   return function (value, key, object) {
-    // Run each of the validations returning early when something fails.
+    // Run each of the validations, returning when something fails.
     for (var i = 0; i < fns.length; i++) {
       var valid = fns[i][1](value, key, object);
 
@@ -179,7 +174,7 @@ var toValidationFunction = function (config, rules) {
 
     return toValidationObject(true, null, value, key);
   };
-};
+}
 
 /**
  * Convert a rules object into a simple validation function.
@@ -189,7 +184,7 @@ var toValidationFunction = function (config, rules) {
  * @param  {Object}   types
  * @return {Function}
  */
-var toValidation = function (configs, rules, types) {
+function toValidation (configs, rules, types) {
   // Initialize the configs to an array if they aren't already.
   configs = Array.isArray(configs) ? configs : [configs];
 
@@ -270,7 +265,7 @@ var toValidation = function (configs, rules, types) {
 
     return response;
   };
-};
+}
 
 /**
  * Every time you require the module you're expected to call it as a function
@@ -286,7 +281,13 @@ module.exports = function () {
    * @param  {Object}   schema
    * @return {Function}
    */
-  var validate = function (schema) {
+  function validate (schema) {
+    if (!schema) {
+      return function () {
+        return {};
+      };
+    }
+
     var validations = {};
 
     // Convert all parameters into validation functions.
@@ -324,7 +325,7 @@ module.exports = function () {
         errors: errors
       };
     };
-  };
+  }
 
   /**
    * Provide validation of types.
