@@ -284,7 +284,7 @@ module.exports = function () {
   function validate (schema) {
     if (!schema) {
       return function () {
-        return {};
+        return { valid: true, errors: [] };
       };
     }
 
