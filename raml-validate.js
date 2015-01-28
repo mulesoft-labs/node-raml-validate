@@ -192,7 +192,7 @@ function toValidation (configs, rules, types) {
   var simpleValidations = [];
   var repeatValidations = [];
 
-  // Support multiple type validations.
+  // Support an array of type validations.
   configs.forEach(function (config) {
     var validation = [config.type, toValidationFunction(config, rules)];
 
@@ -292,11 +292,7 @@ module.exports = function () {
 
     // Convert all parameters into validation functions.
     Object.keys(schema).forEach(function (param) {
-      var config = schema[param];
-      var rules  = validate.RULES;
-      var types  = validate.TYPES;
-
-      validations[param] = toValidation(config, rules, types);
+      validations[param] = validate.rule(schema[param]);
     });
 
     /**
@@ -326,6 +322,16 @@ module.exports = function () {
       };
     };
   }
+
+  /**
+   * Create a singular rule validation function.
+   *
+   * @param  {Object}   config
+   * @return {Function}
+   */
+  validate.rule = function rule (config) {
+    return toValidation(config, validate.RULES, validate.TYPES);
+  };
 
   /**
    * Provide validation of types.
