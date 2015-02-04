@@ -49,7 +49,15 @@ user({
 All validation errors can be retrieved from the `errors` property on the returned object. If `valid === false`, the errors will be set to an array. This can be useful for generating error messages for the client.
 
 ```javascript
-[{ rule: 'minLength', value: 'test', key: 'password' }]
+[
+  {
+    valid: false,
+    key: 'password',
+    value: 'test',
+    rule: 'minLength',
+    attr: 5
+  }
+]
 ```
 
 ### Required validation

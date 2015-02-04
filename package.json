@@ -4,7 +4,7 @@
   "description": "Strict validation of RAML parameters",
   "main": "raml-validate.js",
   "scripts": {
-    "test": "jshint *.js && istanbul cover node_modules/mocha/bin/_mocha -- -R spec"
+    "test": "jshint *.js && istanbul cover node_modules/mocha/bin/_mocha -- -R spec --bail"
   },
   "repository": {
     "type": "git",

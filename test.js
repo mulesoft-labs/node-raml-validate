@@ -45,7 +45,7 @@ var TESTS = [
     { param: { type: 'string', minLength: 5 } },
     { param: 'test' },
     false,
-    [{ valid: false, value: 'test', key: 'param', rule: 'minLength' }]
+    [{ valid: false, value: 'test', key: 'param', rule: 'minLength', attr: 5 }]
   ],
   [
     { param: { type: 'string', minLength: 5 } },
@@ -63,7 +63,13 @@ var TESTS = [
     { param: { type: 'string', maxLength: 5 } },
     { param: 'testing' },
     false,
-    [{ valid: false, value: 'testing', rule: 'maxLength', key: 'param' }]
+    [{
+      valid: false,
+      value: 'testing',
+      rule: 'maxLength',
+      key: 'param',
+      attr: 5
+    }]
   ],
   [
     { param: { type: 'string', enum: ['test'] } },
@@ -75,7 +81,13 @@ var TESTS = [
     { param: { type: 'string', enum: ['test'] } },
     { param: 'testing' },
     false,
-    [{ valid: false, value: 'testing', key: 'param', rule: 'enum' }]
+    [{
+      valid: false,
+      value: 'testing',
+      key: 'param',
+      rule: 'enum',
+      attr: ['test']
+    }]
   ],
   [
     { param: { type: 'string', pattern: '^\\d+$' } },
@@ -87,7 +99,13 @@ var TESTS = [
     { param: { type: 'string', pattern: '^\\d+$' } },
     { param: 'test' },
     false,
-    [{ valid: false, rule: 'pattern', value: 'test', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'pattern',
+      value: 'test',
+      key: 'param',
+      attr: '^\\d+$'
+    }]
   ],
   [
     { param: { type: 'string', pattern: /^\d+$/ } },
@@ -99,7 +117,13 @@ var TESTS = [
     { param: { type: 'string', pattern: /^\d+$/ } },
     { param: 'test' },
     false,
-    [{ valid: false, rule: 'pattern', value: 'test', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'pattern',
+      value: 'test',
+      key: 'param',
+      attr: /^\d+$/
+    }]
   ],
   /**
    * Number validation.
@@ -126,13 +150,25 @@ var TESTS = [
     { param: { type: 'number' } },
     { param: 'abc' },
     false,
-    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'number'
+    }]
   ],
   [
     { param: { type: 'number' } },
     { param: '123' },
     false,
-    [{ valid: false, rule: 'type', value: '123', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: '123',
+      key: 'param',
+      attr: 'number'
+    }]
   ],
   [
     { param: { type: 'number' } },
@@ -150,7 +186,7 @@ var TESTS = [
     { param: { type: 'number', minimum: 5 } },
     { param: 4 },
     false,
-    [{ valid: false, rule: 'minimum', value: 4, key: 'param' }]
+    [{ valid: false, rule: 'minimum', value: 4, key: 'param', attr: 5 }]
   ],
   [
     { param: { type: 'number', minimum: 5 } },
@@ -168,7 +204,7 @@ var TESTS = [
     { param: { type: 'number', maximum: 5 } },
     { param: 5.1 },
     false,
-    [{ valid: false, rule: 'maximum', value: 5.1, key: 'param' }]
+    [{ valid: false, rule: 'maximum', value: 5.1, key: 'param', attr: 5 }]
   ],
   /**
    * Integer validation.
@@ -195,25 +231,49 @@ var TESTS = [
     { param: { type: 'integer' } },
     { param: 'abc' },
     false,
-    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'integer' } },
     { param: '123' },
     false,
-    [{ valid: false, rule: 'type', value: '123', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: '123',
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'integer' } },
     { param: 123.5 },
     false,
-    [{ valid: false, rule: 'type', value: 123.5, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 123.5,
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'integer' } },
     { param: -123.5 },
     false,
-    [{ valid: false, rule: 'type', value: -123.5, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: -123.5,
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'integer', minimum: 5 } },
@@ -225,7 +285,7 @@ var TESTS = [
     { param: { type: 'integer', minimum: 5 } },
     { param: 4 },
     false,
-    [{ valid: false, rule: 'minimum', value: 4, key: 'param' }]
+    [{ valid: false, rule: 'minimum', value: 4, key: 'param', attr: 5 }]
   ],
   [
     { param: { type: 'integer', maximum: 5 } },
@@ -237,7 +297,7 @@ var TESTS = [
     { param: { type: 'integer', maximum: 5 } },
     { param: 6 },
     false,
-    [{ valid: false, rule: 'maximum', value: 6, key: 'param' }]
+    [{ valid: false, rule: 'maximum', value: 6, key: 'param', attr: 5 }]
   ],
   /**
    * Date validation.
@@ -258,13 +318,19 @@ var TESTS = [
     { param: { type: 'date' } },
     { param: '123' },
     false,
-    [{ valid: false, rule: 'type', value: '123', key: 'param' }]
+    [{ valid: false, rule: 'type', value: '123', key: 'param', attr: 'date' }]
   ],
   [
     { param: { type: 'date' } },
     { param: new Date('abc') },
     false,
-    [{ valid: false, rule: 'type', value: new Date('abc'), key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: new Date('abc'),
+      key: 'param',
+      attr: 'date'
+    }]
   ],
   /*
    * Boolean validation. This type is only used for sanitization.
@@ -291,19 +357,25 @@ var TESTS = [
     { param: { type: 'boolean' } },
     { param: 'abc' },
     false,
-    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'boolean'
+    }]
   ],
   [
     { param: { type: 'boolean' } },
     { param: '1' },
     false,
-    [{ valid: false, rule: 'type', value: '1', key: 'param' }]
+    [{ valid: false, rule: 'type', value: '1', key: 'param', attr: 'boolean' }]
   ],
   [
     { param: { type: 'boolean' } },
     { param: '0' },
     false,
-    [{ valid: false, rule: 'type', value: '0', key: 'param' }]
+    [{ valid: false, rule: 'type', value: '0', key: 'param', attr: 'boolean' }]
   ],
   /**
    * Required validation.
@@ -312,7 +384,13 @@ var TESTS = [
     { param: { type: 'string', required: true } },
     { param: null },
     false,
-    [{ valid: false, rule: 'required', value: null, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'required',
+      value: null,
+      key: 'param',
+      attr: true
+    }]
   ],
   [
     { param: { type: 'string', required: true } },
@@ -330,13 +408,19 @@ var TESTS = [
     { param: { type: 'integer', required: true } },
     { param: null },
     false,
-    [{ valid: false, rule: 'required', value: null, key: 'param' }]
+    [{ valid: false, rule: 'required', value: null, key: 'param', attr: true }]
   ],
   [
     { param: { type: 'integer', required: true } },
     { param: 'abc' },
     false,
-    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'integer', required: true } },
@@ -348,13 +432,25 @@ var TESTS = [
     { param: { type: 'number', required: true } },
     { param: null },
     false,
-    [{ valid: false, rule: 'required', value: null, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'required',
+      value: null,
+      key: 'param',
+      attr: true
+    }]
   ],
   [
     { param: { type: 'number', required: true } },
     { param: 'abc' },
     false,
-    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'number'
+    }]
   ],
   [
     { param: { type: 'number', required: true } },
@@ -366,7 +462,13 @@ var TESTS = [
     { param: { type: 'date', required: true } },
     { param: null },
     false,
-    [{ valid: false, rule: 'required', value: null, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'required',
+      value: null,
+      key: 'param',
+      attr: true
+    }]
   ],
   [
     { param: { type: 'date', required: true } },
@@ -381,7 +483,7 @@ var TESTS = [
     { param: { type: 'string', repeat: true } },
     { param: 'abc' },
     false,
-    [{ valid: false, rule: 'repeat', value: 'abc', key: 'param' }]
+    [{ valid: false, rule: 'repeat', value: 'abc', key: 'param', attr: true }]
   ],
   [
     { param: { type: 'string', repeat: true } },
@@ -399,7 +501,7 @@ var TESTS = [
     { param: { type: 'integer', repeat: true } },
     { param: 123 },
     false,
-    [{ valid: false, rule: 'repeat', value: 123, key: 'param' }]
+    [{ valid: false, rule: 'repeat', value: 123, key: 'param', attr: true }]
   ],
   [
     { param: { type: 'integer', repeat: true } },
@@ -411,19 +513,37 @@ var TESTS = [
     { param: { type: 'integer', repeat: true } },
     { param: [1, '2'] },
     false,
-    [{ valid: false, rule: 'type', value: [1, '2'], key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: [1, '2'],
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'integer', repeat: true } },
     { param: [1, 'a'] },
     false,
-    [{ valid: false, rule: 'type', value: [1, 'a'], key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: [1, 'a'],
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     { param: { type: 'number', repeat: true } },
     { param: 123.5 },
     false,
-    [{ valid: false, rule: 'repeat', value: 123.5, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'repeat',
+      value: 123.5,
+      key: 'param',
+      attr: true
+    }]
   ],
   [
     { param: { type: 'number', repeat: true } },
@@ -435,13 +555,25 @@ var TESTS = [
     { param: { type: 'number', repeat: true } },
     { param: ['1.5', 2] },
     false,
-    [{ valid: false, rule: 'type', value: ['1.5', 2], key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: ['1.5', 2],
+      key: 'param',
+      attr: 'number'
+    }]
   ],
   [
     { param: { type: 'number', repeat: true } },
     { param: [1.5, 'a'] },
     false,
-    [{ valid: false, rule: 'type', value: [1.5, 'a'], key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: [1.5, 'a'],
+      key: 'param',
+      attr: 'number'
+    }]
   ],
   /**
    * More advanced validation use-cases.
@@ -471,7 +603,13 @@ var TESTS = [
       size: 'extra large'
     },
     false,
-    [{ valid: false, rule: 'enum', value: 'extra large', key: 'size' }]
+    [{
+      valid: false,
+      rule: 'enum',
+      value: 'extra large',
+      key: 'size',
+      attr: ['small', 'medium', 'large']
+    }]
   ],
   [
     {
@@ -489,7 +627,8 @@ var TESTS = [
       valid: false,
       rule: 'maxLength',
       value: 'something super long that breaks validation',
-      key: 'username'
+      key: 'username',
+      attr: 20
     }]
   ],
   /**
@@ -516,8 +655,20 @@ var TESTS = [
     },
     false,
     [
-      { valid: false, rule: 'minLength', value: 'abc', key: 'username' },
-      { valid: false, rule: 'minLength', value: '123', key: 'password' }
+      {
+        valid: false,
+        rule: 'minLength',
+        value: 'abc',
+        key: 'username',
+        attr: 5
+      },
+      {
+        valid: false,
+        rule: 'minLength',
+        value: '123',
+        key: 'password',
+        attr: 5
+      }
     ]
   ],
   /**
@@ -572,7 +723,13 @@ var TESTS = [
       param: 123.5
     },
     false,
-    [{ valid: false, rule: 'type', value: 123.5, key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 123.5,
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   /**
    * Multiple types with repeat support.
@@ -593,7 +750,13 @@ var TESTS = [
       param: 'test'
     },
     false,
-    [{ valid: false, rule: 'type', value: 'test', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'test',
+      key: 'param',
+      attr: 'integer'
+    }]
   ],
   [
     {
@@ -611,7 +774,13 @@ var TESTS = [
       param: [123]
     },
     false,
-    [{ valid: false, rule: 'type', value: [123], key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: [123],
+      key: 'param',
+      attr: 'string'
+    }]
   ],
   [
     {
@@ -662,7 +831,13 @@ var TESTS = [
       param: 'abc'
     },
     false,
-    [{ valid: false, rule: 'type', value: 'abc', key: 'param' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'unknown'
+    }]
   ]
 ];
 

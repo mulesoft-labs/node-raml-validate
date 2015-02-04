@@ -128,13 +128,20 @@ function isPattern (pattern) {
  * Convert arguments into an object.
  *
  * @param  {Boolean} valid
- * @param  {String}  rule
  * @param  {*}       value
  * @param  {String}  key
+ * @param  {String}  rule
+ * @param  {String}  attr
  * @return {Object}
  */
-function toValidationObject (valid, rule, value, key) {
-  return { valid: valid, rule: rule, value: value, key: key };
+function toValidationObject (valid, key, value, rule, attr) {
+  return {
+    valid: valid,
+    rule: rule,
+    attr: attr,
+    value: value,
+    key: key
+  };
 }
 
 /**
@@ -150,7 +157,7 @@ function toValidationFunction (config, rules) {
   // Iterate over the keys and dynamically push validation rules.
   Object.keys(config).forEach(function (rule) {
     if (rules.hasOwnProperty(rule)) {
-      fns.push([rule, rules[rule](config[rule], rule)]);
+      fns.push([rule, rules[rule](config[rule], rule), config[rule]]);
     }
   });
 
@@ -165,14 +172,17 @@ function toValidationFunction (config, rules) {
   return function (value, key, object) {
     // Run each of the validations, returning when something fails.
     for (var i = 0; i < fns.length; i++) {
-      var valid = fns[i][1](value, key, object);
+      var rule = fns[i][0];
+      var fn = fns[i][1];
+      var attr = fns[i][2];
+      var valid = fn(value, key, object);
 
       if (!valid) {
-        return toValidationObject(false, fns[i][0], value, key);
+        return toValidationObject(false, key, value, rule, attr);
       }
     }
 
-    return toValidationObject(true, null, value, key);
+    return toValidationObject(true, key, value);
   };
 }
 
@@ -218,48 +228,42 @@ function toValidation (configs, rules, types) {
    * @return {Object}
    */
   return function (value, key, object) {
-    // Short-circuit validation if the value is `null`.
     if (value == null) {
-      return toValidationObject(isOptional, 'required', value, key);
+      return toValidationObject(
+        isOptional, key, value, 'required', !isOptional
+      );
     }
 
-    // Switch validation type depending on if the value is an array or not.
-    var isArray = Array.isArray(value);
-
-    // Select the validation stack to use based on the (repeated) value.
+    var isArray     = Array.isArray(value);
     var values      = isArray ? value : [value];
     var validations = isArray ? repeatValidations : simpleValidations;
 
-    // Set the initial response to be an error.
-    var response = toValidationObject(
-      false, validations.length ? 'type' : 'repeat', value, key
-    );
+    if (!validations.length) {
+      return toValidationObject(isArray, key, value, 'repeat', !isArray);
+    }
 
-    // Iterate over each value and test using type validation.
+    var response;
+
     validations.some(function (validation) {
-      // Non-existant types should always be invalid.
-      if (!types.hasOwnProperty(validation[0])) {
-        return false;
-      }
+      var isType = values.every(function (userValue) {
+        var type = validation[0];
+        var validType = types[type] && types[type](userValue, key, object);
 
-      // Check all the types match. If they don't, attempt another validation.
-      var isType = values.every(function (value) {
-        return types[validation[0]](value, key, object);
+        if (!validType) {
+          response = toValidationObject(false, key, value, 'type', type);
+        }
+
+        return validType;
       });
 
-      // Skip to the next check if not all types match.
       if (!isType) {
         return false;
       }
 
-      // When every value is the correct type, run the validation on each value
-      // and break the loop if we get a failure.
       values.every(function (value) {
         return (response = validation[1](value, key, object)).valid;
       });
 
-      // Always break the loop when the type was successful. If anything has
-      // failed, `response` will have been set to the invalid object.
       return true;
     });
 
