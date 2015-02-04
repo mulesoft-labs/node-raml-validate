@@ -367,15 +367,39 @@ var TESTS = [
   ],
   [
     { param: { type: 'boolean' } },
+    { param: ['abc'] },
+    false,
+    [{
+      valid: false,
+      rule: 'repeat',
+      value: ['abc'],
+      key: 'param',
+      attr: false
+    }]
+  ],
+  [
+    { param: { type: 'boolean' } },
     { param: '1' },
     false,
-    [{ valid: false, rule: 'type', value: '1', key: 'param', attr: 'boolean' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: '1',
+      key: 'param',
+      attr: 'boolean'
+    }]
   ],
   [
     { param: { type: 'boolean' } },
     { param: '0' },
     false,
-    [{ valid: false, rule: 'type', value: '0', key: 'param', attr: 'boolean' }]
+    [{
+      valid: false,
+      rule: 'type',
+      value: '0',
+      key: 'param',
+      attr: 'boolean'
+    }]
   ],
   /**
    * Required validation.

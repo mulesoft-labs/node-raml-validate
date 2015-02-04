@@ -239,7 +239,7 @@ function toValidation (configs, rules, types) {
     var validations = isArray ? repeatValidations : simpleValidations;
 
     if (!validations.length) {
-      return toValidationObject(isArray, key, value, 'repeat', !isArray);
+      return toValidationObject(false, key, value, 'repeat', !isArray);
     }
 
     var response;
