@@ -862,6 +862,21 @@ var TESTS = [
       key: 'param',
       attr: 'unknown'
     }]
+  ],
+  /**
+   * Regressions.
+   */
+  [
+    {
+      param: {
+        type: 'string',
+        repeat: true,
+        required: false
+      }
+    },
+    { param: [] },
+    true,
+    []
   ]
 ];
 

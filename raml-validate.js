@@ -242,7 +242,7 @@ function toValidation (configs, rules, types) {
       return toValidationObject(false, key, value, 'repeat', !isArray);
     }
 
-    var response;
+    var response = toValidationObject(true, key, value);
 
     validations.some(function (validation) {
       var isType = values.every(function (userValue) {
