@@ -22,9 +22,9 @@
   },
   "homepage": "https://github.com/mulesoft/node-raml-validate",
   "devDependencies": {
-    "chai": "^1.9.1",
-    "istanbul": "^0.2.11",
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.2",
     "jshint": "^2.5.1",
-    "mocha": "^1.20.1"
+    "mocha": "^2.4.5"
   }
 }
