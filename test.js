@@ -1,8 +1,8 @@
 /* global describe, it */
-var util         = require('util');
-var expect       = require('chai').expect;
-var ramlValidate = require('./');
-var validate     = ramlValidate();
+var util = require('util')
+var expect = require('chai').expect
+var ramlValidate = require('./')
+var validate = ramlValidate()
 
 /**
  * An array of all the tests to execute. Tests are in the format of:
@@ -878,7 +878,7 @@ var TESTS = [
     true,
     []
   ]
-];
+]
 
 describe('raml-validate', function () {
   describe('functional tests', function () {
@@ -886,52 +886,52 @@ describe('raml-validate', function () {
      * Run through each of the defined tests to generate the test suite.
      */
     TESTS.forEach(function (test) {
-      var params = test[0];
-      var object = test[1];
-      var valid  = test[2];
-      var errors = test[3];
+      var params = test[0]
+      var object = test[1]
+      var valid = test[2]
+      var errors = test[3]
 
       var description = [
         util.inspect(params),
         valid ? 'should validate' : 'should not validate',
         util.inspect(object)
-      ].join(' ');
+      ].join(' ')
 
       it(description, function () {
-        var validity = validate(params)(object);
+        var validity = validate(params)(object)
 
-        expect(validity.valid).to.equal(valid);
-        expect(validity.errors).to.deep.equal(errors);
-      });
-    });
-  });
+        expect(validity.valid).to.equal(valid)
+        expect(validity.errors).to.deep.equal(errors)
+      })
+    })
+  })
 
   describe('pluginable', function () {
     it('should be able to add a new type validation', function () {
       // Attach a dummy type.
       validate.TYPES.test = function (value) {
-        return value === 'test';
-      };
+        return value === 'test'
+      }
 
       // Create a test schema using our new type.
       var schema = validate({
         param: {
           type: 'test'
         }
-      });
+      })
 
       // Assert the type validation is actually working.
-      expect(schema({ param: 'test' }).valid).to.be.true;
-      expect(schema({ param: 'testing' }).valid).to.be.false;
-    });
+      expect(schema({ param: 'test' }).valid).to.be.true
+      expect(schema({ param: 'testing' }).valid).to.be.false
+    })
 
     it('should be able to add a new validation rule', function () {
       // Attach `requires` validation to the current validate instance.
       validate.RULES.requires = function (property) {
         return function (value, key, object) {
-          return value != null && object[property] != null;
-        };
-      };
+          return value != null && object[property] != null
+        }
+      }
 
       // Create a test schema.
       var schema = validate({
@@ -943,23 +943,23 @@ describe('raml-validate', function () {
           type: 'string',
           requires: 'lat'
         }
-      });
+      })
 
       // Assert our models validate as expected.
-      expect(schema({}).valid).to.be.true;
-      expect(schema({ lng: '123' }).valid).to.be.false;
-      expect(schema({ lng: '123' }).valid).to.be.false;
-      expect(schema({ lat: '123', lng: '123' }).valid).to.be.true;
-    });
+      expect(schema({}).valid).to.be.true
+      expect(schema({ lng: '123' }).valid).to.be.false
+      expect(schema({ lng: '123' }).valid).to.be.false
+      expect(schema({ lat: '123', lng: '123' }).valid).to.be.true
+    })
 
     it('should only add rules to a single instance', function () {
-      validate.TYPES.test = function () {};
-      validate.RULES.test = function () {};
+      validate.TYPES.test = function () {}
+      validate.RULES.test = function () {}
 
-      var newValidate = ramlValidate();
+      var newValidate = ramlValidate()
 
-      expect(newValidate.TYPES.test).to.not.exist;
-      expect(newValidate.RULES.test).to.not.exist;
-    });
-  });
-});
+      expect(newValidate.TYPES.test).to.not.exist
+      expect(newValidate.RULES.test).to.not.exist
+    })
+  })
+})
