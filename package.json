@@ -25,8 +25,8 @@
   "homepage": "https://github.com/mulesoft/node-raml-validate",
   "devDependencies": {
     "chai": "^3.5.0",
-    "istanbul": "^0.4.2",
-    "mocha": "^2.4.5",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.0",
     "standard": "^8.3.0"
   },
   "dependencies": {
