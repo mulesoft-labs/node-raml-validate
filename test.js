@@ -563,22 +563,22 @@ var RAML10TESTS = [
   /**
    * Multiple validation types.
    */
-  // [
-  //   {
-  //     param: {
-  //       type: ['string', 'integer']
-  //     }
-  //   },
-  //   {
-  //     param: 123
-  //   },
-  //   true,
-  //   []
-  // ],
   [
     {
       param: {
-        type: ['string', 'integer']
+        type: ['string | integer']
+      }
+    },
+    {
+      param: 123
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['string | integer']
       }
     },
     {
@@ -590,7 +590,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['string', 'integer']
+        type: ['string | integer']
       }
     },
     {
