@@ -1,4 +1,5 @@
 var toString = Object.prototype.toString
+var ramlTypesystem = require('raml-typesystem')
 
 /**
  * Check the value is a valid date.
@@ -272,6 +273,50 @@ function toValidation (configs, rules, types) {
 }
 
 /**
+ * Convert the output of raml-typesystem validator into a simple validation function.
+ *
+ * @param  {Object}   config
+ * @return {Function}
+ */
+function toValidationRAML10 (config) {
+  var ts = ramlTypesystem.loadType(config)
+  var isOptional
+
+  // Allow short-circuiting of non-required values.
+  if (!config.required) {
+    isOptional = true
+  }
+  /**
+   * Validate a value.
+   *
+   * @param  {*}      value
+   * @param  {String} key
+   * @return {Object}
+   */
+  return function (value, key) {
+    var result = ts.validate(value)
+
+    // missing non-required value are ok
+    // if (!value && !config.required) {
+    //   return toValidationObject(true, key, value)
+    // }
+    if (value == null) {
+      return toValidationObject(
+        isOptional, key, value, 'required', !isOptional
+      )
+    }
+
+    // TODO: return the error constrain that was violated
+    // see: https://github.com/raml-org/typesystem-ts/issues/80
+    // - error type/rule key (e.g. type, required, pattern, minLength)
+    // - value (e.g. string, true, [a-z]+, 1)
+    // var err = result.getErrors()[0]
+    // return toValidationObject(false, key, value, err.rule.key, err.rule.value)
+    return toValidationObject(result.isOk(), key, value, JSON.stringify(config))
+  }
+}
+
+/**
  * Every time you require the module you're expected to call it as a function
  * to create a new instance. This is to ensure two modules can't make competing
  * changes with their own validation rules.
@@ -285,7 +330,7 @@ module.exports = function () {
    * @param  {Object}   schema
    * @return {Function}
    */
-  function validate (schema) {
+  function validate (schema, RAMLVersion) {
     if (!schema) {
       return function () {
         return { valid: true, errors: [] }
@@ -293,10 +338,15 @@ module.exports = function () {
     }
 
     var validations = {}
+    RAMLVersion = RAMLVersion || 'RAML10'
 
     // Convert all parameters into validation functions.
     Object.keys(schema).forEach(function (param) {
-      validations[param] = validate.rule(schema[param])
+      if (RAMLVersion === 'RAML10') {
+        validations[param] = validate.ruleRAML10(schema[param])
+      } else {
+        validations[param] = validate.rule(schema[param])
+      }
     })
 
     /**
@@ -335,6 +385,9 @@ module.exports = function () {
    */
   validate.rule = function rule (config) {
     return toValidation(config, validate.RULES, validate.TYPES)
+  }
+  validate.ruleRAML10 = function rule (config) {
+    return toValidationRAML10(config)
   }
 
   /**

@@ -5,7 +5,7 @@ var ramlValidate = require('./')
 var validate = ramlValidate()
 
 /**
- * An array of all the tests to execute. Tests are in the format of:
+ * An array of all the common tests to execute. Tests are in the format of:
  * ["params", "object", "valid", "errors"]
  *
  * @type {Array}
@@ -299,39 +299,6 @@ var TESTS = [
     false,
     [{ valid: false, rule: 'maximum', value: 6, key: 'param', attr: 5 }]
   ],
-  /**
-   * Date validation.
-   */
-  [
-    { param: { type: 'date' } },
-    { param: null },
-    true,
-    []
-  ],
-  [
-    { param: { type: 'date' } },
-    { param: new Date() },
-    true,
-    []
-  ],
-  [
-    { param: { type: 'date' } },
-    { param: '123' },
-    false,
-    [{ valid: false, rule: 'type', value: '123', key: 'param', attr: 'date' }]
-  ],
-  [
-    { param: { type: 'date' } },
-    { param: new Date('abc') },
-    false,
-    [{
-      valid: false,
-      rule: 'type',
-      value: new Date('abc'),
-      key: 'param',
-      attr: 'date'
-    }]
-  ],
   /*
    * Boolean validation. This type is only used for sanitization.
    */
@@ -482,6 +449,205 @@ var TESTS = [
     true,
     []
   ],
+  /**
+   * More advanced validation use-cases.
+   */
+  [
+    {
+      size: {
+        type: 'string',
+        enum: ['small', 'medium', 'large']
+      }
+    },
+    {
+      size: 'extra large'
+    },
+    false,
+    [{
+      valid: false,
+      rule: 'enum',
+      value: 'extra large',
+      key: 'size',
+      attr: ['small', 'medium', 'large']
+    }]
+  ],
+  [
+    {
+      username: {
+        type: 'string',
+        minLength: 5,
+        maxLength: 20
+      }
+    },
+    {
+      username: 'something super long that breaks validation'
+    },
+    false,
+    [{
+      valid: false,
+      rule: 'maxLength',
+      value: 'something super long that breaks validation',
+      key: 'username',
+      attr: 20
+    }]
+  ],
+  /**
+   * Multiple validation errors.
+   */
+  [
+    {
+      username: {
+        type: 'string',
+        minLength: 5,
+        maxLength: 50,
+        required: true
+      },
+      password: {
+        type: 'string',
+        minLength: 5,
+        maxLength: 50,
+        required: true
+      }
+    },
+    {
+      username: 'abc',
+      password: '123'
+    },
+    false,
+    [
+      {
+        valid: false,
+        rule: 'minLength',
+        value: 'abc',
+        key: 'username',
+        attr: 5
+      },
+      {
+        valid: false,
+        rule: 'minLength',
+        value: '123',
+        key: 'password',
+        attr: 5
+      }
+    ]
+  ],
+  /**
+   * Unknown types should be invalid.
+   */
+  [
+    {
+      param: {
+        type: 'unknown'
+      }
+    },
+    {
+      param: 'abc'
+    },
+    false,
+    [{
+      valid: false,
+      rule: 'type',
+      value: 'abc',
+      key: 'param',
+      attr: 'unknown'
+    }]
+  ]
+]
+
+/**
+ * An array of all the RAML 1.0 -specific tests.
+ *
+ * @type {Array}
+ */
+var RAML10TESTS = [
+  /**
+   * Multiple validation types.
+   */
+  // [
+  //   {
+  //     param: {
+  //       type: ['string', 'integer']
+  //     }
+  //   },
+  //   {
+  //     param: 123
+  //   },
+  //   true,
+  //   []
+  // ],
+  [
+    {
+      param: {
+        type: ['string', 'integer']
+      }
+    },
+    {
+      param: 'test'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['string', 'integer']
+      }
+    },
+    {
+      param: 123.5
+    },
+    false,
+    [{
+      valid: false,
+      rule: 'type',
+      value: 123.5,
+      key: 'param',
+      attr: 'integer'
+    }]
+  ]
+]
+/**
+ * An array of all the RAML 0.8 -specific tests.
+ *
+ * @type {Array}
+ */
+var RAML08TESTS = [
+  /**
+   * Date validation.
+   */
+  [
+    { param: { type: 'date' } },
+    { param: null },
+    true,
+    []
+  ],
+  [
+    { param: { type: 'date' } },
+    { param: new Date() },
+    true,
+    []
+  ],
+  [
+    { param: { type: 'date' } },
+    { param: '123' },
+    false,
+    [{ valid: false, rule: 'type', value: '123', key: 'param', attr: 'date' }]
+  ],
+  [
+    { param: { type: 'date' } },
+    { param: new Date('abc') },
+    false,
+    [{
+      valid: false,
+      rule: 'type',
+      value: new Date('abc'),
+      key: 'param',
+      attr: 'date'
+    }]
+  ],
+  /**
+   * Required validation.
+   */
   [
     { param: { type: 'date', required: true } },
     { param: null },
@@ -599,9 +765,6 @@ var TESTS = [
       attr: 'number'
     }]
   ],
-  /**
-   * More advanced validation use-cases.
-   */
   [
     {
       tags: {
@@ -615,145 +778,6 @@ var TESTS = [
     },
     true,
     []
-  ],
-  [
-    {
-      size: {
-        type: 'string',
-        enum: ['small', 'medium', 'large']
-      }
-    },
-    {
-      size: 'extra large'
-    },
-    false,
-    [{
-      valid: false,
-      rule: 'enum',
-      value: 'extra large',
-      key: 'size',
-      attr: ['small', 'medium', 'large']
-    }]
-  ],
-  [
-    {
-      username: {
-        type: 'string',
-        minLength: 5,
-        maxLength: 20
-      }
-    },
-    {
-      username: 'something super long that breaks validation'
-    },
-    false,
-    [{
-      valid: false,
-      rule: 'maxLength',
-      value: 'something super long that breaks validation',
-      key: 'username',
-      attr: 20
-    }]
-  ],
-  /**
-   * Multiple validation errors.
-   */
-  [
-    {
-      username: {
-        type: 'string',
-        minLength: 5,
-        maxLength: 50,
-        required: true
-      },
-      password: {
-        type: 'string',
-        minLength: 5,
-        maxLength: 50,
-        required: true
-      }
-    },
-    {
-      username: 'abc',
-      password: '123'
-    },
-    false,
-    [
-      {
-        valid: false,
-        rule: 'minLength',
-        value: 'abc',
-        key: 'username',
-        attr: 5
-      },
-      {
-        valid: false,
-        rule: 'minLength',
-        value: '123',
-        key: 'password',
-        attr: 5
-      }
-    ]
-  ],
-  /**
-   * Multiple validation types.
-   */
-  [
-    {
-      param: [
-        {
-          type: 'string'
-        },
-        {
-          type: 'integer'
-        }
-      ]
-    },
-    {
-      param: 123
-    },
-    true,
-    []
-  ],
-  [
-    {
-      param: [
-        {
-          type: 'string'
-        },
-        {
-          type: 'integer'
-        }
-      ]
-    },
-    {
-      param: 'test'
-    },
-    true,
-    []
-  ],
-  [
-    {
-      param: [
-        {
-          type: 'string'
-        },
-        {
-          type: 'integer'
-        }
-      ]
-    },
-    {
-      param: 123.5
-    },
-    false,
-    [{
-      valid: false,
-      rule: 'type',
-      value: 123.5,
-      key: 'param',
-      attr: 'integer'
-    }]
   ],
   /**
    * Multiple types with repeat support.
@@ -843,24 +867,63 @@ var TESTS = [
     []
   ],
   /**
-   * Unknown types should be invalid.
+   * Multiple validation types.
    */
   [
     {
-      param: {
-        type: 'unknown'
-      }
+      param: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'integer'
+        }
+      ]
     },
     {
-      param: 'abc'
+      param: 123
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 'test'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: [
+        {
+          type: 'string'
+        },
+        {
+          type: 'integer'
+        }
+      ]
+    },
+    {
+      param: 123.5
     },
     false,
     [{
       valid: false,
       rule: 'type',
-      value: 'abc',
+      value: 123.5,
       key: 'param',
-      attr: 'unknown'
+      attr: 'integer'
     }]
   ],
   /**
@@ -881,11 +944,38 @@ var TESTS = [
 ]
 
 describe('raml-validate', function () {
-  describe('functional tests', function () {
+  describe('functional tests (RAML 1.0)', function () {
     /**
      * Run through each of the defined tests to generate the test suite.
      */
-    TESTS.forEach(function (test) {
+    TESTS.concat(RAML10TESTS).forEach(function (test) {
+      var params = test[0]
+      var object = test[1]
+      var valid = test[2]
+      // var errors = test[3]
+
+      var description = [
+        util.inspect(params),
+        valid ? 'should validate' : 'should not validate',
+        util.inspect(object)
+      ].join(' ')
+
+      it(description, function () {
+        var validity = validate(params)(object)
+
+        expect(validity.valid).to.equal(valid)
+        // skipping error check until https://github.com/raml-org/typesystem-ts/issues/80
+        // is resolved
+        // expect(validity.errors).to.deep.equal(errors)
+      })
+    })
+  })
+
+  describe('functional tests (RAML 0.8)', function () {
+    /**
+     * Run through each of the defined tests to generate the test suite.
+     */
+    TESTS.concat(RAML08TESTS).forEach(function (test) {
       var params = test[0]
       var object = test[1]
       var valid = test[2]
@@ -898,7 +988,7 @@ describe('raml-validate', function () {
       ].join(' ')
 
       it(description, function () {
-        var validity = validate(params)(object)
+        var validity = validate(params, 'RAML08')(object)
 
         expect(validity.valid).to.equal(valid)
         expect(validity.errors).to.deep.equal(errors)
@@ -907,7 +997,7 @@ describe('raml-validate', function () {
   })
 
   describe('pluginable', function () {
-    it('should be able to add a new type validation', function () {
+    it('should be able to add a new type validation (RAML 0.8)', function () {
       // Attach a dummy type.
       validate.TYPES.test = function (value) {
         return value === 'test'
@@ -918,14 +1008,14 @@ describe('raml-validate', function () {
         param: {
           type: 'test'
         }
-      })
+      }, 'RAML08')
 
       // Assert the type validation is actually working.
       expect(schema({ param: 'test' }).valid).to.be.true
       expect(schema({ param: 'testing' }).valid).to.be.false
     })
 
-    it('should be able to add a new validation rule', function () {
+    it('should be able to add a new validation rule (RAML 0.8)', function () {
       // Attach `requires` validation to the current validate instance.
       validate.RULES.requires = function (property) {
         return function (value, key, object) {
@@ -943,7 +1033,7 @@ describe('raml-validate', function () {
           type: 'string',
           requires: 'lat'
         }
-      })
+      }, 'RAML08')
 
       // Assert our models validate as expected.
       expect(schema({}).valid).to.be.true

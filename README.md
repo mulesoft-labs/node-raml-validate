@@ -4,7 +4,7 @@
 [![Build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 
-Strict and pluginable validation of [RAML parameters](https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#named-parameters).
+Strict and pluginable validation of [RAML 0.8 named parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#named-parameters) and [RAML 1.0 built-in types](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md#built-in-types).
 
 ## Installation
 
@@ -18,6 +18,9 @@ You must require the module and call it as a function to get a validation instan
 
 ```javascript
 var validate = require('raml-validate')();
+
+// RAML version to use, either 'RAML10' (default) or 'RAML08'
+var RAMLVersion = 'RAML10'
 
 // Create a user model schema.
 var user = validate({
@@ -33,7 +36,7 @@ var user = validate({
     maxLength: 50,
     required: true
   }
-});
+}, RAMLVersion);
 
 // Validate a user model.
 user({
@@ -64,15 +67,17 @@ All validation errors can be retrieved from the `errors` property on the returne
 
 If the validation does not set `required` to be true, a `null` or `undefined` value will be valid.
 
-### Repeated validation
+### Repeated validation (RAML 0.8 only)
 
 The module has core support for repeated properties in the form of an array. If the validation is set to `repeat`, but does not receive an array - validation will fail with a `repeat` error.
 
 ### Multiple types
 
-The module supports multiple types according to the [RAML spec](https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#named-parameters-with-multiple-types). When multiple types are specified, it'll run the validation against the matching type.
+The module supports multiple types according to the RAML spec (see [RAML 0.8 named parameters with multiple types](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#named-parameters-with-multiple-types) and [RAML 1.0 multiple inheritance](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md#multiple-inheritance)). When multiple types are specified, it'll run the validation against the matching type.
+
 
 ```javascript
+// RAML 0.8
 validate({
   file: [{
     type: 'string'
@@ -80,11 +85,18 @@ validate({
     type: 'file'
   }]
 });
+
+// RAML 1.0
+validate({
+  file: {
+    type: ['string', 'file']
+  }
+});
 ```
 
 If any of the types are set to `repeat`, it'll only run that validation object when every value in the array is of the correct type - otherwise you will receive a type error.
 
-### Adding new types
+### Adding new types (RAML 0.8 only)
 
 New type validations can be added by setting the corresponding property on the `validate.TYPES` object. For example, adding file validation to support buffers can be added by doing:
 
@@ -96,7 +108,7 @@ validate.TYPES.file = function (value) {
 
 The function must accept the value as the first parameter and return a boolean depending on success or failure.
 
-### Adding new rules
+### Adding new rules (RAML 0.8 only)
 
 New rules can be added by setting the corresponding property on the `validate.RULES` object. For example, to add file size support we can do the following:
 
