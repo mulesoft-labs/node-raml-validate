@@ -852,6 +852,35 @@ var RAML10TESTS = [
     true,
     []
   ],
+  /**
+   * Enum
+   */
+  [
+    {
+      clearanceLevel: {
+        type: ['string'],
+        enum: ['low', 'high']
+      }
+    },
+    {
+      clearanceLevel: 'high'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      clearanceLevel: {
+        type: ['string'],
+        enum: ['low', 'high']
+      }
+    },
+    {
+      clearanceLevel: 'unknown'
+    },
+    false,
+    []
+  ]
 ]
 /**
  * An array of RAML 0.8 -specific tests.
