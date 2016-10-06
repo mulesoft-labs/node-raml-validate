@@ -555,13 +555,138 @@ var TESTS = [
 ]
 
 /**
- * An array of all the RAML 1.0 -specific tests.
+ * An array of RAML 1.0 -specific tests.
  *
  * @type {Array}
  */
 var RAML10TESTS = [
   /**
-   * Multiple validation types.
+   * Date types.
+   */
+  [
+    {
+      date: {
+        type: ['date-only']
+      }
+    },
+    {
+      date: '2015-05-23'
+    },
+    true,
+    []
+  ],
+  // [
+  //   {
+  //     date: {
+  //       type: ['date-only']
+  //     }
+  //   },
+  //   {
+  //     date: '2015-07-04T21:00:00'
+  //   },
+  //   false,
+  //   []
+  // ],
+  [
+    {
+      date: {
+        type: ['time-only']
+      }
+    },
+    {
+      date: '12:30:00'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['time-only']
+      }
+    },
+    {
+      date: '2015-07-04T21:00:00'
+    },
+    false,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['datetime-only']
+      }
+    },
+    {
+      date: '2015-07-04T21:00:00'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['datetime-only']
+      }
+    },
+    {
+      date: '2015-07-04'
+    },
+    false,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['datetime'] // default format: rfc3339
+      }
+    },
+    {
+      date: '2016-02-28T16:41:41.090Z'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['datetime']
+      }
+    },
+    {
+      date: 'Sun, 28 Feb 2016 16:41:41 GMT'
+    },
+    false,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['datetime'],
+        format: 'rfc2616'
+      }
+    },
+    {
+      date: 'Sun, 28 Feb 2016 16:41:41 GMT'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      date: {
+        type: ['datetime'],
+        format: 'rfc2616'
+      }
+    },
+    {
+      date: '2016-02-28T16:41:41.090Z'
+    },
+    false,
+    []
+  ],
+  /**
+   * Union type.
    */
   [
     {
@@ -604,10 +729,132 @@ var RAML10TESTS = [
       key: 'param',
       attr: 'integer'
     }]
-  ]
+  ],
+  /**
+   * Array type
+   */
+  [
+    {
+      param: {
+        type: ['array'],
+        minItems: 2,
+        maxItems: 4
+      }
+    },
+    {
+      param: ['a', 'b', 'c', 'd']
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['array'],
+        minItems: 2,
+        maxItems: 4
+      }
+    },
+    {
+      param: ['a']
+    },
+    false,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['array'],
+        minItems: 2,
+        maxItems: 4
+      }
+    },
+    {
+      param: ['a', 'b', 'c', 'd', 'e']
+    },
+    false,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['array'],
+        items: ['integer']
+      }
+    },
+    {
+      param: [1]
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['array'],
+        items: ['integer']
+      }
+    },
+    {
+      param: ['a']
+    },
+    false,
+    []
+  ],
+  /**
+   * Type expression
+   */
+  [
+    {
+      param: {
+        type: ['string[]']
+      }
+    },
+    {
+      param: ['a', 'b', 'c']
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['string[]']
+      }
+    },
+    {
+      param: 'a'
+    },
+    false,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['string[][]']
+      }
+    },
+    {
+      param: [['a', 'b', 'c'], ['d', 'e', 'f']]
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: ['(string[] | integer[])[]']
+      }
+    },
+    {
+      param: [['a', 'b', 'c'], [1, 2, 3]]
+    },
+    true,
+    []
+  ],
 ]
 /**
- * An array of all the RAML 0.8 -specific tests.
+ * An array of RAML 0.8 -specific tests.
  *
  * @type {Array}
  */
