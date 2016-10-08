@@ -273,19 +273,20 @@ function toValidation (configs, rules, types) {
 }
 
 /**
- * Convert the output of raml-typesystem validator into a simple validation function.
+ * Convert the output of raml-typesystem to a simple validation function.
  *
  * @param  {Object}   config
  * @return {Function}
  */
 function toValidationRAML10 (config) {
   var ts = ramlTypesystem.loadType(config)
-  var isOptional
+  var isOptional = false
 
   // Allow short-circuiting of non-required values.
   if (!config.required) {
     isOptional = true
   }
+
   /**
    * Validate a value.
    *
@@ -295,24 +296,28 @@ function toValidationRAML10 (config) {
    */
   return function (value, key) {
     var result = ts.validate(value)
+    var error = result.getErrors()[0]
+    var errorSource = error && error.getSource()
+    var errorKey = (errorSource && errorSource.facetName) ? errorSource.facetName() : undefined
+    var errorValue = (errorSource && errorSource.facetName) ? errorSource.value() : undefined
 
-    // missing non-required value are ok
-    // if (!value && !config.required) {
-    //   return toValidationObject(true, key, value)
-    // }
-    if (value == null) {
-      return toValidationObject(
-        isOptional, key, value, 'required', !isOptional
-      )
+    // work around raml-typesystem error output
+    // https://github.com/raml-org/typesystem-ts/issues/80
+    if (errorKey === 'typeOf') {
+      errorKey = 'type'
+    } else if (errorKey && errorKey.startsWith('should be')) {
+      errorValue = errorKey.replace(/^(should be )/, '')
+      errorKey = 'type'
+    } else if (errorKey === 'nothing' & errorValue === '!!!') {
+      errorKey = 'type'
+      errorValue = 'unknown'
     }
 
-    // TODO: return the error constrain that was violated
-    // see: https://github.com/raml-org/typesystem-ts/issues/80
-    // - error type/rule key (e.g. type, required, pattern, minLength)
-    // - value (e.g. string, true, [a-z]+, 1)
-    // var err = result.getErrors()[0]
-    // return toValidationObject(false, key, value, err.rule.key, err.rule.value)
-    return toValidationObject(result.isOk(), key, value, JSON.stringify(config))
+    if (value == null) {
+      return toValidationObject(isOptional, key, value, 'required', !isOptional)
+    }
+
+    return toValidationObject(result.isOk(), key, value, errorKey, errorValue)
   }
 }
 

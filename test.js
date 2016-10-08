@@ -334,18 +334,6 @@ var TESTS = [
   ],
   [
     { param: { type: 'boolean' } },
-    { param: ['abc'] },
-    false,
-    [{
-      valid: false,
-      rule: 'repeat',
-      value: ['abc'],
-      key: 'param',
-      attr: false
-    }]
-  ],
-  [
-    { param: { type: 'boolean' } },
     { param: '1' },
     false,
     [{
@@ -570,7 +558,7 @@ var RAML10TESTS = [
       }
     },
     {
-      date: '2015-05-23'
+      date: '2016-10-07'
     },
     true,
     []
@@ -582,7 +570,7 @@ var RAML10TESTS = [
   //     }
   //   },
   //   {
-  //     date: '2015-07-04T21:00:00'
+  //     date: '2016-10-07T21:00:00'
   //   },
   //   false,
   //   []
@@ -606,10 +594,16 @@ var RAML10TESTS = [
       }
     },
     {
-      date: '2015-07-04T21:00:00'
+      date: '2016-10-07T21:00:00'
     },
     false,
-    []
+    [{
+      'attr': 'time-only',
+      'key': 'date',
+      'rule': 'type',
+      'valid': false,
+      'value': '2016-10-07T21:00:00'
+    }]
   ],
   [
     {
@@ -618,7 +612,7 @@ var RAML10TESTS = [
       }
     },
     {
-      date: '2015-07-04T21:00:00'
+      date: '2016-10-07T21:00:00'
     },
     true,
     []
@@ -630,10 +624,16 @@ var RAML10TESTS = [
       }
     },
     {
-      date: '2015-07-04'
+      date: '2016-10-07'
     },
     false,
-    []
+    [{
+      'attr': 'datetime-only',
+      'key': 'date',
+      'rule': 'type',
+      'valid': false,
+      'value': '2016-10-07'
+    }]
   ],
   [
     {
@@ -647,18 +647,24 @@ var RAML10TESTS = [
     true,
     []
   ],
-  [
-    {
-      date: {
-        type: ['datetime']
-      }
-    },
-    {
-      date: 'Sun, 28 Feb 2016 16:41:41 GMT'
-    },
-    false,
-    []
-  ],
+  // [
+  //   {
+  //     date: {
+  //       type: ['datetime']
+  //     }
+  //   },
+  //   {
+  //     date: 'Sun, 28 Feb 2016 16:41:41 GMT'
+  //   },
+  //   false,
+  //   [{
+  //     'attr': 'datetime',
+  //     'key': 'date',
+  //     'rule': 'type',
+  //     'valid': false,
+  //     'value': 'Sun, 28 Feb 2016 16:41:41 GMT'
+  //   }]
+  // ],
   [
     {
       date: {
@@ -672,19 +678,25 @@ var RAML10TESTS = [
     true,
     []
   ],
-  [
-    {
-      date: {
-        type: ['datetime'],
-        format: 'rfc2616'
-      }
-    },
-    {
-      date: '2016-02-28T16:41:41.090Z'
-    },
-    false,
-    []
-  ],
+  // [
+  //   {
+  //     date: {
+  //       type: ['datetime'],
+  //       format: 'rfc2616'
+  //     }
+  //   },
+  //   {
+  //     date: '2016-02-28T16:41:41.090Z'
+  //   },
+  //   false,
+  //   [{
+  //     'attr': 'datetime',
+  //     'key': 'date',
+  //     'rule': 'type',
+  //     'valid': false,
+  //     'value': '2016-02-28T16:41:41.090Z'
+  //   }]
+  // ],
   /**
    * Union type.
    */
@@ -712,24 +724,24 @@ var RAML10TESTS = [
     true,
     []
   ],
-  [
-    {
-      param: {
-        type: ['string | integer']
-      }
-    },
-    {
-      param: 123.5
-    },
-    false,
-    [{
-      valid: false,
-      rule: 'type',
-      value: 123.5,
-      key: 'param',
-      attr: 'integer'
-    }]
-  ],
+  // [
+  //   {
+  //     param: {
+  //       type: ['string | integer']
+  //     }
+  //   },
+  //   {
+  //     param: 123.5
+  //   },
+  //   false,
+  //   [{
+  //     valid: false,
+  //     rule: 'type',
+  //     value: 123.5,
+  //     key: 'param',
+  //     attr: 'integer'
+  //   }]
+  // ],
   /**
    * Array type
    */
@@ -759,7 +771,13 @@ var RAML10TESTS = [
       param: ['a']
     },
     false,
-    []
+    [{
+      attr: 2,
+      key: 'param',
+      rule: 'minItems',
+      valid: false,
+      value: ['a']
+    }]
   ],
   [
     {
@@ -773,7 +791,13 @@ var RAML10TESTS = [
       param: ['a', 'b', 'c', 'd', 'e']
     },
     false,
-    []
+    [{
+      attr: 4,
+      key: 'param',
+      rule: 'maxItems',
+      valid: false,
+      value: ['a', 'b', 'c', 'd', 'e']
+    }]
   ],
   [
     {
@@ -799,7 +823,13 @@ var RAML10TESTS = [
       param: ['a']
     },
     false,
-    []
+    [{
+      attr: 'integer',
+      key: 'param',
+      rule: 'type',
+      valid: false,
+      value: ['a']
+    }]
   ],
   /**
    * Type expression
@@ -826,7 +856,13 @@ var RAML10TESTS = [
       param: 'a'
     },
     false,
-    []
+    [{
+      attr: 'array',
+      key: 'param',
+      rule: 'type',
+      valid: false,
+      value: 'a'
+    }]
   ],
   [
     {
@@ -879,7 +915,31 @@ var RAML10TESTS = [
       clearanceLevel: 'unknown'
     },
     false,
-    []
+    [{
+      attr: [
+        'low',
+        'high'
+      ],
+      key: 'clearanceLevel',
+      rule: 'enum',
+      valid: false,
+      value: 'unknown'
+    }]
+  ],
+  /**
+   * Special cases
+   */
+  [
+    { param: { type: 'boolean' } },
+    { param: ['abc'] },
+    false,
+    [{
+      attr: 'boolean',
+      key: 'param',
+      rule: 'type',
+      valid: false,
+      value: ['abc']
+    }]
   ]
 ]
 /**
@@ -1216,6 +1276,21 @@ var RAML08TESTS = [
     { param: [] },
     true,
     []
+  ],
+  /**
+   * Special cases
+   */
+  [
+    { param: { type: 'boolean' } },
+    { param: ['abc'] },
+    false,
+    [{
+      valid: false,
+      rule: 'repeat',
+      value: ['abc'],
+      key: 'param',
+      attr: false
+    }]
   ]
 ]
 
@@ -1228,7 +1303,7 @@ describe('raml-validate', function () {
       var params = test[0]
       var object = test[1]
       var valid = test[2]
-      // var errors = test[3]
+      var errors = test[3]
 
       var description = [
         util.inspect(params),
@@ -1242,7 +1317,7 @@ describe('raml-validate', function () {
         expect(validity.valid).to.equal(valid)
         // skipping error check until https://github.com/raml-org/typesystem-ts/issues/80
         // is resolved
-        // expect(validity.errors).to.deep.equal(errors)
+        expect(validity.errors).to.deep.equal(errors)
       })
     })
   })
