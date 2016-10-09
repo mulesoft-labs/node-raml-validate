@@ -305,7 +305,7 @@ function toValidationRAML10 (config) {
     // https://github.com/raml-org/typesystem-ts/issues/80
     if (errorKey === 'typeOf') {
       errorKey = 'type'
-    } else if (errorKey && errorKey.startsWith('should be')) {
+    } else if (errorKey && new RegExp("^should be").test(errorKey)) {
       errorValue = errorKey.replace(/^(should be )/, '')
       errorKey = 'type'
     } else if (errorKey === 'nothing' & errorValue === '!!!') {
