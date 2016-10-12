@@ -342,16 +342,15 @@ module.exports = function () {
       }
     }
 
-    var validations = {}
+    // RAML version. Default to RAML 1.0.
     RAMLVersion = RAMLVersion || 'RAML10'
+
+    var validations = {}
+    var validateRule = RAMLVersion === 'RAML10' ? validate.ruleRAML10 : validate.rule
 
     // Convert all parameters into validation functions.
     Object.keys(schema).forEach(function (param) {
-      if (RAMLVersion === 'RAML10') {
-        validations[param] = validate.ruleRAML10(schema[param])
-      } else {
-        validations[param] = validate.rule(schema[param])
-      }
+      validations[param] = validateRule(schema[param])
     })
 
     /**
