@@ -18,7 +18,7 @@
     "validation"
   ],
   "author": "MuleSoft, Inc.",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/mulesoft/node-raml-validate/issues"
   },
