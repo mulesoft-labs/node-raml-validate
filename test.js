@@ -554,7 +554,7 @@ var RAML10TESTS = [
   [
     {
       date: {
-        type: ['date-only']
+        type: 'date-only'
       }
     },
     {
@@ -563,22 +563,28 @@ var RAML10TESTS = [
     true,
     []
   ],
-  // [
-  //   {
-  //     date: {
-  //       type: ['date-only']
-  //     }
-  //   },
-  //   {
-  //     date: '2016-10-07T21:00:00'
-  //   },
-  //   false,
-  //   []
-  // ],
   [
     {
       date: {
-        type: ['time-only']
+        type: 'date-only'
+      }
+    },
+    {
+      date: '2016-10-07T21:00:00'
+    },
+    false,
+    [{
+      'attr': 'date-only',
+      'key': 'date',
+      'rule': 'type',
+      'valid': false,
+      'value': '2016-10-07T21:00:00'
+    }]
+  ],
+  [
+    {
+      date: {
+        type: 'time-only'
       }
     },
     {
@@ -590,7 +596,7 @@ var RAML10TESTS = [
   [
     {
       date: {
-        type: ['time-only']
+        type: 'time-only'
       }
     },
     {
@@ -608,7 +614,7 @@ var RAML10TESTS = [
   [
     {
       date: {
-        type: ['datetime-only']
+        type: 'datetime-only'
       }
     },
     {
@@ -620,7 +626,7 @@ var RAML10TESTS = [
   [
     {
       date: {
-        type: ['datetime-only']
+        type: 'datetime-only'
       }
     },
     {
@@ -638,7 +644,7 @@ var RAML10TESTS = [
   [
     {
       date: {
-        type: ['datetime'] // default format: rfc3339
+        type: 'datetime' // default format: rfc3339
       }
     },
     {
@@ -668,7 +674,7 @@ var RAML10TESTS = [
   [
     {
       date: {
-        type: ['datetime'],
+        type: 'datetime',
         format: 'rfc2616'
       }
     },
@@ -703,7 +709,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['string | integer']
+        type: 'string | integer'
       }
     },
     {
@@ -715,7 +721,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['string | integer']
+        type: 'string | integer'
       }
     },
     {
@@ -727,7 +733,7 @@ var RAML10TESTS = [
   // [
   //   {
   //     param: {
-  //       type: ['string | integer']
+  //       type: 'string | integer'
   //     }
   //   },
   //   {
@@ -748,7 +754,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['array'],
+        type: 'array',
         minItems: 2,
         maxItems: 4
       }
@@ -762,7 +768,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['array'],
+        type: 'array',
         minItems: 2,
         maxItems: 4
       }
@@ -782,7 +788,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['array'],
+        type: 'array',
         minItems: 2,
         maxItems: 4
       }
@@ -802,8 +808,8 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['array'],
-        items: ['integer']
+        type: 'array',
+        items: 'integer'
       }
     },
     {
@@ -815,8 +821,8 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['array'],
-        items: ['integer']
+        type: 'array',
+        items: 'integer'
       }
     },
     {
@@ -837,7 +843,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['string[]']
+        type: 'string[]'
       }
     },
     {
@@ -849,7 +855,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['string[]']
+        type: 'string[]'
       }
     },
     {
@@ -867,7 +873,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['string[][]']
+        type: 'string[][]'
       }
     },
     {
@@ -879,7 +885,7 @@ var RAML10TESTS = [
   [
     {
       param: {
-        type: ['(string[] | integer[])[]']
+        type: '(string[] | integer[])[]'
       }
     },
     {
@@ -894,7 +900,7 @@ var RAML10TESTS = [
   [
     {
       clearanceLevel: {
-        type: ['string'],
+        type: 'string',
         enum: ['low', 'high']
       }
     },
@@ -907,7 +913,7 @@ var RAML10TESTS = [
   [
     {
       clearanceLevel: {
-        type: ['string'],
+        type: 'string',
         enum: ['low', 'high']
       }
     },
@@ -924,6 +930,97 @@ var RAML10TESTS = [
       rule: 'enum',
       valid: false,
       value: 'unknown'
+    }]
+  ],
+  /**
+   * datatype-expansion's 'union' type
+   */
+  [
+    {
+      param: {
+        type: 'union',
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'integer',
+            maximum: 100
+          }
+        ]
+      }
+    },
+    {
+      param: 'foo'
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: 'union',
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'integer',
+            maximum: 100
+          }
+        ]
+      }
+    },
+    {
+      param: 42
+    },
+    true,
+    []
+  ],
+  [
+    {
+      param: {
+        type: 'union',
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'integer',
+            maximum: 100
+          }
+        ]
+      }
+    },
+    {
+      param: 101
+    },
+    false,
+    [{
+      attr: 'invalid union type',
+      key: 'param',
+      rule: 'union type',
+      valid: false,
+      value: 101
+    }]
+  ],
+  [
+    {
+      param: {
+        type: 'union',
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'integer',
+            maximum: 100
+          }
+        ]
+      }
+    },
+    {
+      param: true
+    },
+    false,
+    [{
+      attr: 'invalid union type',
+      key: 'param',
+      rule: 'union type',
+      valid: false,
+      value: true
     }]
   ],
   /**
