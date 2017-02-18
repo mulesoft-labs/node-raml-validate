@@ -279,13 +279,21 @@ function toValidation (configs, rules, types) {
  * @return {Function}
  */
 function toValidationRAML10 (config) {
-  var ts = ramlTypesystem.loadType(config)
+  var validations = []
   var isOptional = false
+  // Whether this is a 'union' type as defined in datatype-expansion's algorithm
+  // https://github.com/raml-org/raml-parser-toolbelt/blob/master/tools/datatype-expansion/doc/algorithms.md
+  var isUnion = (config.type === 'union' && config.hasOwnProperty('anyOf'))
+  var configs = isUnion ? config.anyOf : [config]
 
   // Allow short-circuiting of non-required values.
   if (!config.required) {
     isOptional = true
   }
+
+  configs.forEach(function (config) {
+    validations.push(ramlTypesystem.loadType(config))
+  })
 
   /**
    * Validate a value.
@@ -295,7 +303,11 @@ function toValidationRAML10 (config) {
    * @return {Object}
    */
   return function (value, key) {
-    var result = ts.validate(value)
+    var result
+    for (var i = 0; i < validations.length; i++) {
+      result = validations[i].validate(value)
+      if (result.isOk()) break
+    }
     var error = result.getErrors()[0]
     var errorSource = error && error.getSource()
     var errorKey = (errorSource && errorSource.facetName) ? errorSource.facetName() : undefined
@@ -303,9 +315,12 @@ function toValidationRAML10 (config) {
 
     // work around raml-typesystem error output
     // https://github.com/raml-org/typesystem-ts/issues/80
-    if (errorKey === 'typeOf') {
+    if (errorKey && isUnion) {
+      errorKey = 'union type'
+      errorValue = 'invalid union type'
+    } else if (errorKey === 'typeOf') {
       errorKey = 'type'
-    } else if (errorKey && new RegExp("^should be").test(errorKey)) {
+    } else if (errorKey && new RegExp('^should be').test(errorKey)) {
       errorValue = errorKey.replace(/^(should be )/, '')
       errorKey = 'type'
     } else if (errorKey === 'nothing' & errorValue === '!!!') {

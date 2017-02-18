@@ -67,30 +67,41 @@ All validation errors can be retrieved from the `errors` property on the returne
 
 If the validation does not set `required` to be true, a `null` or `undefined` value will be valid.
 
+### Union types (RAML 1.0 only)
+
+The module supports the 'union' type as defined in [`datatype-expansion`'s algorithm](https://github.com/raml-org/raml-parser-toolbelt/blob/master/tools/datatype-expansion/doc/algorithms.md).
+
+```javascript
+validate({
+  userId: {
+    type: 'union',
+    anyOf: [
+      { type: 'string' },
+      {
+        type: 'integer',
+        maximum: 100
+      }
+    ]
+  }
+});
+```
+
 ### Repeated validation (RAML 0.8 only)
 
 The module has core support for repeated properties in the form of an array. If the validation is set to `repeat`, but does not receive an array - validation will fail with a `repeat` error.
 
-### Multiple types
+### Multiple types (RAML 0.8 only)
 
-The module supports multiple types according to the RAML spec (see [RAML 0.8 named parameters with multiple types](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#named-parameters-with-multiple-types) and [RAML 1.0 multiple inheritance](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md#multiple-inheritance)). When multiple types are specified, it'll run the validation against the matching type.
+The module supports multiple types according to the RAML spec (see [RAML 0.8 named parameters with multiple types](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#named-parameters-with-multiple-types). When multiple types are specified, it'll run the validation against the matching type.
 
 
 ```javascript
-// RAML 0.8
 validate({
   file: [{
     type: 'string'
   }, {
     type: 'file'
   }]
-});
-
-// RAML 1.0
-validate({
-  file: {
-    type: ['string', 'file']
-  }
 });
 ```
 
