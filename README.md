@@ -45,7 +45,7 @@ user({
 }); //=> { valid: true, errors: [] }
 ```
 
-**Module does not currently support [wild-card parameters](https://github.com/raml-org/raml-spec/blob/master/raml-0.8.md#headers)**
+**Module does not currently support [wild-card parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#headers) (RAML 0.8) and regular expression patterns in [property declaration](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md#property-declarations) (RAML 1.0)**
 
 ### Getting validation errors
 
