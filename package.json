@@ -1,10 +1,12 @@
 {
   "name": "raml-validate",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Strict validation of RAML parameters",
   "main": "raml-validate.js",
   "scripts": {
-    "test": "jshint *.js && istanbul cover node_modules/mocha/bin/_mocha -- -R spec --bail"
+    "lint": "standard",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --bail",
+    "test": "npm run lint; npm run test-cov"
   },
   "repository": {
     "type": "git",
@@ -16,15 +18,18 @@
     "validation"
   ],
   "author": "MuleSoft, Inc.",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/mulesoft/node-raml-validate/issues"
   },
   "homepage": "https://github.com/mulesoft/node-raml-validate",
   "devDependencies": {
     "chai": "^3.5.0",
-    "istanbul": "^0.4.2",
-    "jshint": "^2.5.1",
-    "mocha": "^2.4.5"
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.0",
+    "standard": "^8.3.0"
+  },
+  "dependencies": {
+    "raml-typesystem": "^0.0.62"
   }
 }

@@ -1,4 +1,5 @@
-var toString = Object.prototype.toString;
+var toString = Object.prototype.toString
+var ramlTypesystem = require('raml-typesystem')
 
 /**
  * Check the value is a valid date.
@@ -7,7 +8,7 @@ var toString = Object.prototype.toString;
  * @return {Boolean}
  */
 function isDate (check) {
-  return toString.call(check) === '[object Date]' && !isNaN(check.getTime());
+  return toString.call(check) === '[object Date]' && !isNaN(check.getTime())
 }
 
 /**
@@ -17,7 +18,7 @@ function isDate (check) {
  * @return {Boolean}
  */
 function isBoolean (check) {
-  return typeof check === 'boolean';
+  return typeof check === 'boolean'
 }
 
 /**
@@ -27,7 +28,7 @@ function isBoolean (check) {
  * @return {Boolean}
  */
 function isString (check) {
-  return typeof check === 'string';
+  return typeof check === 'string'
 }
 
 /**
@@ -37,7 +38,7 @@ function isString (check) {
  * @return {Boolean}
  */
 function isInteger (check) {
-  return typeof check === 'number' && check % 1 === 0;
+  return typeof check === 'number' && check % 1 === 0
 }
 
 /**
@@ -47,7 +48,7 @@ function isInteger (check) {
  * @return {Boolean}
  */
 function isNumber (check) {
-  return typeof check === 'number' && isFinite(check);
+  return typeof check === 'number' && isFinite(check)
 }
 
 /**
@@ -58,8 +59,8 @@ function isNumber (check) {
  */
 function isMinimum (min) {
   return function (check) {
-    return check >= min;
-  };
+    return check >= min
+  }
 }
 
 /**
@@ -70,8 +71,8 @@ function isMinimum (min) {
  */
 function isMaximum (max) {
   return function (check) {
-    return check <= max;
-  };
+    return check <= max
+  }
 }
 
 /**
@@ -82,8 +83,8 @@ function isMaximum (max) {
  */
 function isMinimumLength (min) {
   return function (check) {
-    return Buffer.byteLength(check) >= min;
-  };
+    return Buffer.byteLength(check) >= min
+  }
 }
 
 /**
@@ -94,8 +95,8 @@ function isMinimumLength (min) {
  */
 function isMaximumLength (max) {
   return function (check) {
-    return Buffer.byteLength(check) <= max;
-  };
+    return Buffer.byteLength(check) <= max
+  }
 }
 
 /**
@@ -106,8 +107,8 @@ function isMaximumLength (max) {
  */
 function isEnum (values) {
   return function (check) {
-    return values.indexOf(check) > -1;
-  };
+    return values.indexOf(check) > -1
+  }
 }
 
 /**
@@ -118,10 +119,10 @@ function isEnum (values) {
  */
 function isPattern (pattern) {
   if (toString.call(pattern) !== '[object RegExp]') {
-    pattern = new RegExp(pattern);
+    pattern = new RegExp(pattern)
   }
 
-  return pattern.test.bind(pattern);
+  return pattern.test.bind(pattern)
 }
 
 /**
@@ -141,7 +142,7 @@ function toValidationObject (valid, key, value, rule, attr) {
     attr: attr,
     value: value,
     key: key
-  };
+  }
 }
 
 /**
@@ -152,14 +153,14 @@ function toValidationObject (valid, key, value, rule, attr) {
  * @return {Function}
  */
 function toValidationFunction (config, rules) {
-  var fns = [];
+  var fns = []
 
   // Iterate over the keys and dynamically push validation rules.
   Object.keys(config).forEach(function (rule) {
     if (rules.hasOwnProperty(rule)) {
-      fns.push([rule, rules[rule](config[rule], rule), config[rule]]);
+      fns.push([rule, rules[rule](config[rule], rule), config[rule]])
     }
-  });
+  })
 
   /**
    * Run every validation.
@@ -172,18 +173,18 @@ function toValidationFunction (config, rules) {
   return function (value, key, object) {
     // Run each of the validations, returning when something fails.
     for (var i = 0; i < fns.length; i++) {
-      var rule = fns[i][0];
-      var fn = fns[i][1];
-      var attr = fns[i][2];
-      var valid = fn(value, key, object);
+      var rule = fns[i][0]
+      var fn = fns[i][1]
+      var attr = fns[i][2]
+      var valid = fn(value, key, object)
 
       if (!valid) {
-        return toValidationObject(false, key, value, rule, attr);
+        return toValidationObject(false, key, value, rule, attr)
       }
     }
 
-    return toValidationObject(true, key, value);
-  };
+    return toValidationObject(true, key, value)
+  }
 }
 
 /**
@@ -196,28 +197,28 @@ function toValidationFunction (config, rules) {
  */
 function toValidation (configs, rules, types) {
   // Initialize the configs to an array if they aren't already.
-  configs = Array.isArray(configs) ? configs : [configs];
+  configs = Array.isArray(configs) ? configs : [configs]
 
-  var isOptional        = !configs.length;
-  var simpleValidations = [];
-  var repeatValidations = [];
+  var isOptional = !configs.length
+  var simpleValidations = []
+  var repeatValidations = []
 
   // Support an array of type validations.
   configs.forEach(function (config) {
-    var validation = [config.type, toValidationFunction(config, rules)];
+    var validation = [config.type, toValidationFunction(config, rules)]
 
     // Allow short-circuiting of non-required values.
     if (!config.required) {
-      isOptional = true;
+      isOptional = true
     }
 
     // Push validations into each stack depending on the "repeat".
     if (config.repeat) {
-      repeatValidations.push(validation);
+      repeatValidations.push(validation)
     } else {
-      simpleValidations.push(validation);
+      simpleValidations.push(validation)
     }
-  });
+  })
 
   /**
    * Validate a value based on "type" and "repeat".
@@ -231,44 +232,108 @@ function toValidation (configs, rules, types) {
     if (value == null) {
       return toValidationObject(
         isOptional, key, value, 'required', !isOptional
-      );
+      )
     }
 
-    var isArray     = Array.isArray(value);
-    var values      = isArray ? value : [value];
-    var validations = isArray ? repeatValidations : simpleValidations;
+    var isArray = Array.isArray(value)
+    var values = isArray ? value : [value]
+    var validations = isArray ? repeatValidations : simpleValidations
 
     if (!validations.length) {
-      return toValidationObject(false, key, value, 'repeat', !isArray);
+      return toValidationObject(false, key, value, 'repeat', !isArray)
     }
 
-    var response = toValidationObject(true, key, value);
+    var response = toValidationObject(true, key, value)
 
     validations.some(function (validation) {
       var isType = values.every(function (userValue) {
-        var type = validation[0];
-        var validType = types[type] && types[type](userValue, key, object);
+        var type = validation[0]
+        var validType = types[type] && types[type](userValue, key, object)
 
         if (!validType) {
-          response = toValidationObject(false, key, value, 'type', type);
+          response = toValidationObject(false, key, value, 'type', type)
         }
 
-        return validType;
-      });
+        return validType
+      })
 
       if (!isType) {
-        return false;
+        return false
       }
 
       values.every(function (value) {
-        return (response = validation[1](value, key, object)).valid;
-      });
+        return (response = validation[1](value, key, object)).valid
+      })
 
-      return true;
-    });
+      return true
+    })
 
-    return response;
-  };
+    return response
+  }
+}
+
+/**
+ * Convert the output of raml-typesystem to a simple validation function.
+ *
+ * @param  {Object}   config
+ * @return {Function}
+ */
+function toValidationRAML10 (config) {
+  var validations = []
+  var isOptional = false
+  // Whether this is a 'union' type as defined in datatype-expansion's algorithm
+  // https://github.com/raml-org/raml-parser-toolbelt/blob/master/tools/datatype-expansion/doc/algorithms.md
+  var isUnion = (config.type === 'union' && config.hasOwnProperty('anyOf'))
+  var configs = isUnion ? config.anyOf : [config]
+
+  // Allow short-circuiting of non-required values.
+  if (!config.required) {
+    isOptional = true
+  }
+
+  configs.forEach(function (config) {
+    validations.push(ramlTypesystem.loadType(config))
+  })
+
+  /**
+   * Validate a value.
+   *
+   * @param  {*}      value
+   * @param  {String} key
+   * @return {Object}
+   */
+  return function (value, key) {
+    var result
+    for (var i = 0; i < validations.length; i++) {
+      result = validations[i].validate(value)
+      if (result.isOk()) break
+    }
+    var error = result.getErrors()[0]
+    var errorSource = error && error.getSource()
+    var errorKey = (errorSource && errorSource.facetName) ? errorSource.facetName() : undefined
+    var errorValue = (errorSource && errorSource.facetName) ? errorSource.value() : undefined
+
+    // work around raml-typesystem error output
+    // https://github.com/raml-org/typesystem-ts/issues/80
+    if (errorKey && isUnion) {
+      errorKey = 'union type'
+      errorValue = 'invalid union type'
+    } else if (errorKey === 'typeOf') {
+      errorKey = 'type'
+    } else if (errorKey && new RegExp('^should be').test(errorKey)) {
+      errorValue = errorKey.replace(/^(should be )/, '')
+      errorKey = 'type'
+    } else if (errorKey === 'nothing' & errorValue === '!!!') {
+      errorKey = 'type'
+      errorValue = 'unknown'
+    }
+
+    if (value == null) {
+      return toValidationObject(isOptional, key, value, 'required', !isOptional)
+    }
+
+    return toValidationObject(result.isOk(), key, value, errorKey, errorValue)
+  }
 }
 
 /**
@@ -285,19 +350,23 @@ module.exports = function () {
    * @param  {Object}   schema
    * @return {Function}
    */
-  function validate (schema) {
+  function validate (schema, RAMLVersion) {
     if (!schema) {
       return function () {
-        return { valid: true, errors: [] };
-      };
+        return { valid: true, errors: [] }
+      }
     }
 
-    var validations = {};
+    // RAML version. Default to RAML 1.0.
+    RAMLVersion = RAMLVersion || 'RAML10'
+
+    var validations = {}
+    var validateRule = RAMLVersion === 'RAML10' ? validate.ruleRAML10 : validate.rule
 
     // Convert all parameters into validation functions.
     Object.keys(schema).forEach(function (param) {
-      validations[param] = validate.rule(schema[param]);
-    });
+      validations[param] = validateRule(schema[param])
+    })
 
     /**
      * The function accepts an object to be validated. All rules are already
@@ -307,24 +376,24 @@ module.exports = function () {
      * @return {Boolean}
      */
     return function (model) {
-      model = model || {};
+      model = model || {}
 
       // Map all validations to their object and filter for failures.
       var errors = Object.keys(validations).map(function (param) {
-        var value      = model[param];
-        var validation = validations[param];
+        var value = model[param]
+        var validation = validations[param]
 
         // Return the validation result.
-        return validation(value, param, model);
+        return validation(value, param, model)
       }).filter(function (validation) {
-        return !validation.valid;
-      });
+        return !validation.valid
+      })
 
       return {
-        valid:  errors.length === 0,
+        valid: errors.length === 0,
         errors: errors
-      };
-    };
+      }
+    }
   }
 
   /**
@@ -334,8 +403,11 @@ module.exports = function () {
    * @return {Function}
    */
   validate.rule = function rule (config) {
-    return toValidation(config, validate.RULES, validate.TYPES);
-  };
+    return toValidation(config, validate.RULES, validate.TYPES)
+  }
+  validate.ruleRAML10 = function rule (config) {
+    return toValidationRAML10(config)
+  }
 
   /**
    * Provide validation of types.
@@ -343,12 +415,12 @@ module.exports = function () {
    * @type {Object}
    */
   validate.TYPES = {
-    date:    isDate,
-    number:  isNumber,
+    date: isDate,
+    number: isNumber,
     integer: isInteger,
     boolean: isBoolean,
-    string:  isString
-  };
+    string: isString
+  }
 
   /**
    * Provide overridable validation of parameters.
@@ -356,16 +428,16 @@ module.exports = function () {
    * @type {Object}
    */
   validate.RULES = {
-    minimum:   isMinimum,
-    maximum:   isMaximum,
+    minimum: isMinimum,
+    maximum: isMaximum,
     minLength: isMinimumLength,
     maxLength: isMaximumLength,
-    enum:      isEnum,
-    pattern:   isPattern
-  };
+    enum: isEnum,
+    pattern: isPattern
+  }
 
   /**
    * Return the validate function.
    */
-  return validate;
-};
+  return validate
+}
