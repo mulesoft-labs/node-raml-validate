@@ -1409,7 +1409,7 @@ describe('raml-validate', function () {
       ].join(' ')
 
       it(description, function () {
-        var validity = validate(params)(object)
+        var validity = validate(params, 'RAML10')(object)
 
         expect(validity.valid).to.equal(valid)
         // skipping error check until https://github.com/raml-org/typesystem-ts/issues/80

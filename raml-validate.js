@@ -357,8 +357,8 @@ module.exports = function () {
       }
     }
 
-    // RAML version. Default to RAML 1.0.
-    RAMLVersion = RAMLVersion || 'RAML10'
+    // RAML version. Defaults to RAML 0.8.
+    RAMLVersion = RAMLVersion || 'RAML08'
 
     var validations = {}
     var validateRule = RAMLVersion === 'RAML10' ? validate.ruleRAML10 : validate.rule

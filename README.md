@@ -19,7 +19,7 @@ You must require the module and call it as a function to get a validation instan
 ```javascript
 var validate = require('raml-validate')();
 
-// RAML version to use, either 'RAML10' (default) or 'RAML08'
+// RAML version to use, either 'RAML10' or 'RAML08' (default)
 var RAMLVersion = 'RAML10'
 
 // Create a user model schema.
