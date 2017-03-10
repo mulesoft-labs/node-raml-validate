@@ -1,6 +1,12 @@
 var toString = Object.prototype.toString
 var ramlTypesystem = require('raml-typesystem')
 
+var RAML10_NON_OBJECT_TYPES = [
+  'any', 'array',
+  'string', 'number', 'integer', 'boolean', 'file',
+  'date-only', 'time-only', 'datetime-only', 'datetime'
+]
+
 /**
  * Check the value is a valid date.
  *
@@ -363,10 +369,19 @@ module.exports = function () {
     var validations = {}
     var validateRule = RAMLVersion === 'RAML10' ? validate.ruleRAML10 : validate.rule
 
-    // Convert all parameters into validation functions.
-    Object.keys(schema).forEach(function (param) {
-      validations[param] = validateRule(schema[param])
-    })
+    if (Array.isArray(schema.type) && schema.type.length === 1) {
+      schema.type = schema.type[0]
+    }
+
+    var isObjectType = RAML10_NON_OBJECT_TYPES.indexOf(schema.type) === -1
+    if (RAMLVersion === 'RAML10' && !isObjectType) {
+      validations = validateRule(schema)
+    } else {
+      // Convert all parameters into validation functions.
+      Object.keys(schema).forEach(function (param) {
+        validations[param] = validateRule(schema[param])
+      })
+    }
 
     /**
      * The function accepts an object to be validated. All rules are already
@@ -377,17 +392,25 @@ module.exports = function () {
      */
     return function (model) {
       model = model || {}
+      var errors = []
 
-      // Map all validations to their object and filter for failures.
-      var errors = Object.keys(validations).map(function (param) {
-        var value = model[param]
-        var validation = validations[param]
+      if (isObjectType || RAMLVersion !== 'RAML10') {
+        // Map all validations to their object and filter for failures.
+        errors = Object.keys(validations).map(function (param) {
+          var value = model[param]
+          var validation = validations[param]
 
-        // Return the validation result.
-        return validation(value, param, model)
-      }).filter(function (validation) {
-        return !validation.valid
-      })
+          // Return the validation result.
+          return validation(value, param, model)
+        }).filter(function (validation) {
+          return !validation.valid
+        })
+      } else {
+        var validation = validations(model, undefined, model)
+        if (!validation.valid) {
+          errors.push(validation)
+        }
+      }
 
       return {
         valid: errors.length === 0,

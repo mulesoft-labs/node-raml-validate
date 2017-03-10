@@ -1024,6 +1024,113 @@ var RAML10TESTS = [
     }]
   ],
   /**
+   * Non-object root elements
+   */
+  [
+    {
+      type: 'array',
+      items: 'integer'
+    },
+    [ 1, 2, 3 ],
+    true,
+    []
+  ],
+  [
+    {
+      type: 'array',
+      items: 'integer'
+    },
+    [ 'a', 'b', 'c' ],
+    false,
+    [
+      {
+        attr: 'integer',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: [
+          'a',
+          'b',
+          'c'
+        ]
+      }
+    ]
+  ],
+  [
+    {
+      type: 'array',
+      items: 'integer'
+    },
+    'a',
+    false,
+    [
+      {
+        attr: 'array',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: 'a'
+      }
+    ]
+  ],
+  [
+    {
+      type: 'array',
+      items: 'integer'
+    },
+    7,
+    false,
+    [
+      {
+        attr: 'array',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: 7
+      }
+    ]
+  ],
+  [
+    { type: 'integer' },
+    7,
+    true,
+    []
+  ],
+  [
+    { type: 'integer' },
+    'a',
+    false,
+    [
+      {
+        attr: 'integer',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: 'a'
+      }
+    ]
+  ],
+  [
+    { type: 'string' },
+    'a',
+    true,
+    []
+  ],
+  [
+    { type: 'string' },
+    7,
+    false,
+    [
+      {
+        attr: 'string',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: 7
+      }
+    ]
+  ],
+  /**
    * Special cases
    */
   [
