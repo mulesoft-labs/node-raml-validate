@@ -388,7 +388,12 @@ module.exports = function () {
       model = model || {}
       var errors = []
 
-      if (isObjectType || RAMLVersion !== 'RAML10') {
+      if (RAMLVersion === 'RAML10' && !isObjectType) {
+        var validation = validations(model, undefined, model)
+        if (!validation.valid) {
+          errors.push(validation)
+        }
+      } else {
         // Map all validations to their object and filter for failures.
         errors = Object.keys(validations).map(function (param) {
           var value = model[param]
@@ -399,11 +404,6 @@ module.exports = function () {
         }).filter(function (validation) {
           return !validation.valid
         })
-      } else {
-        var validation = validations(model, undefined, model)
-        if (!validation.valid) {
-          errors.push(validation)
-        }
       }
 
       return {
