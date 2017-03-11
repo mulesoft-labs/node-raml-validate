@@ -1,12 +1,6 @@
 var toString = Object.prototype.toString
 var ramlTypesystem = require('raml-typesystem')
 
-var RAML10_NON_OBJECT_TYPES = [
-  'any', 'array',
-  'string', 'number', 'integer', 'boolean', 'file',
-  'date-only', 'time-only', 'datetime-only', 'datetime'
-]
-
 /**
  * Check the value is a valid date.
  *
@@ -373,7 +367,7 @@ module.exports = function () {
       schema.type = schema.type[0]
     }
 
-    var isObjectType = RAML10_NON_OBJECT_TYPES.indexOf(schema.type) === -1
+    var isObjectType = !schema.type || schema.type === 'object'
     if (RAMLVersion === 'RAML10' && !isObjectType) {
       validations = validateRule(schema)
     } else {
