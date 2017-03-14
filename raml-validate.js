@@ -368,7 +368,9 @@ module.exports = function () {
     }
 
     var isObjectType = !schema.type || schema.type === 'object'
-    if (RAMLVersion === 'RAML10' && !isObjectType) {
+    var isEmptyObject = isObjectType && schema.properties && Object.keys(schema.properties).length === 0
+
+    if (RAMLVersion === 'RAML10' && (!isObjectType || isEmptyObject)) {
       validations = validateRule(schema)
     } else {
       // Convert all parameters into validation functions.
@@ -388,7 +390,7 @@ module.exports = function () {
       model = model || {}
       var errors = []
 
-      if (RAMLVersion === 'RAML10' && !isObjectType) {
+      if (RAMLVersion === 'RAML10' && (!isObjectType || isEmptyObject)) {
         var validation = validations(model, undefined, model)
         if (!validation.valid) {
           errors.push(validation)
