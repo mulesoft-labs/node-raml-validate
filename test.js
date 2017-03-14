@@ -1091,6 +1091,36 @@ var RAML10TESTS = [
     ]
   ],
   [
+    {
+      type: 'array',
+      items: 'object'
+    },
+    [ {}, {}, {} ],
+    true,
+    []
+  ],
+  [
+    {
+      type: 'array',
+      items: 'object'
+    },
+    [ 'a', 'b', 'c' ],
+    false,
+    [
+      {
+        attr: 'object',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: [
+          'a',
+          'b',
+          'c'
+        ]
+      }
+    ]
+  ],
+  [
     { type: 'integer' },
     7,
     true,
@@ -1144,6 +1174,32 @@ var RAML10TESTS = [
       valid: false,
       value: ['abc']
     }]
+  ],
+  [
+    {
+      type: ['object'],
+      properties: {} // Object with no properties defined
+    },
+    {},
+    true,
+    []
+  ],
+  [
+    {
+      type: 'object',
+      properties: {}
+    },
+    [],
+    false,
+    [
+      {
+        attr: 'object',
+        key: undefined,
+        rule: 'type',
+        valid: false,
+        value: []
+      }
+    ]
   ]
 ]
 /**
