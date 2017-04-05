@@ -30,6 +30,6 @@
     "standard": "^8.3.0"
   },
   "dependencies": {
-    "raml-typesystem": "^0.0.62"
+    "raml-typesystem": "^0.0.x"
   }
 }
