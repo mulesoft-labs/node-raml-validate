@@ -1200,6 +1200,19 @@ var RAML10TESTS = [
         value: []
       }
     ]
+  ],
+  [
+    {
+      type: {
+        type: 'string',
+        enum: ['email', 'password']
+      }
+    },
+    {
+      type: 'email'
+    },
+    true,
+    []
   ]
 ]
 /**
