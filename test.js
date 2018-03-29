@@ -1622,8 +1622,8 @@ describe('raml-validate', function () {
       }, 'RAML08')
 
       // Assert the type validation is actually working.
-      expect(schema({ param: 'test' }).valid).to.be.true
-      expect(schema({ param: 'testing' }).valid).to.be.false
+      expect(schema({ param: 'test' }).valid).to.equal(true)
+      expect(schema({ param: 'testing' }).valid).to.equal(false)
     })
 
     it('should be able to add a new validation rule (RAML 0.8)', function () {
@@ -1647,20 +1647,20 @@ describe('raml-validate', function () {
       }, 'RAML08')
 
       // Assert our models validate as expected.
-      expect(schema({}).valid).to.be.true
-      expect(schema({ lng: '123' }).valid).to.be.false
-      expect(schema({ lng: '123' }).valid).to.be.false
-      expect(schema({ lat: '123', lng: '123' }).valid).to.be.true
+      expect(schema({}).valid).to.equal(true)
+      expect(schema({ lng: '123' }).valid).to.equal(false)
+      expect(schema({ lng: '123' }).valid).to.equal(false)
+      expect(schema({ lat: '123', lng: '123' }).valid).to.equal(true)
     })
 
-    it('should only add rules to a single instance', function () {
+    it.only('should only add rules to a single instance', function () {
       validate.TYPES.test = function () {}
       validate.RULES.test = function () {}
 
       var newValidate = ramlValidate()
 
-      expect(newValidate.TYPES.test).to.not.exist
-      expect(newValidate.RULES.test).to.not.exist
+      expect(newValidate.TYPES.test).to.equal(undefined)
+      expect(newValidate.RULES.test).to.equal(undefined)
     })
   })
 })
