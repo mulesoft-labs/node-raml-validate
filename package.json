@@ -1,6 +1,6 @@
 {
   "name": "raml-validate",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Strict validation of RAML parameters",
   "main": "raml-validate.js",
   "scripts": {
