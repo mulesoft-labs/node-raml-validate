@@ -26,10 +26,10 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "istanbul": "^0.4.5",
-    "mocha": "^5.0.4",
+    "mocha": "^6.1.4",
     "standard": "^12.0.0"
   },
   "dependencies": {
-    "raml-typesystem": "^0.0.90"
+    "raml-typesystem": "^0.0.91"
   }
 }
