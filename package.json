@@ -5,7 +5,7 @@
   "main": "raml-validate.js",
   "scripts": {
     "lint": "standard",
-    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --bail",
+    "test-cov": "nyc node_modules/mocha/bin/_mocha -- -R spec --bail",
     "test": "npm run lint; npm run test-cov"
   },
   "repository": {
@@ -25,8 +25,8 @@
   "homepage": "https://github.com/mulesoft/node-raml-validate",
   "devDependencies": {
     "chai": "^4.1.2",
-    "istanbul": "^0.4.5",
     "mocha": "^6.1.4",
+    "nyc": "^14.1.0",
     "standard": "^12.0.0"
   },
   "dependencies": {
