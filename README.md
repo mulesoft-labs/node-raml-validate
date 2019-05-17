@@ -1,10 +1,9 @@
 # RAML Validate
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/mulesoft-labs/node-raml-validate.svg)](https://greenkeeper.io/)
-
 [![NPM version][npm-image]][npm-url]
 [![Build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
+[![Greenkeeper badge](https://badges.greenkeeper.io/mulesoft-labs/node-raml-validate.svg)](https://greenkeeper.io/)
 
 Strict and pluginable validation of [RAML 0.8 named parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#named-parameters) and [RAML 1.0 built-in types](https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md#built-in-types).
 
@@ -149,7 +148,7 @@ Apache 2.0
 
 [npm-image]: https://img.shields.io/npm/v/raml-validate.svg?style=flat
 [npm-url]: https://npmjs.org/package/raml-validate
-[travis-image]: https://img.shields.io/travis/mulesoft/node-raml-validate.svg?style=flat
-[travis-url]: https://travis-ci.org/mulesoft/node-raml-validate
-[coveralls-image]: https://img.shields.io/coveralls/mulesoft/node-raml-validate.svg?style=flat
-[coveralls-url]: https://coveralls.io/r/mulesoft/node-raml-validate?branch=master
+[travis-image]: https://img.shields.io/travis/mulesoft-labs/node-raml-validate.svg?style=flat
+[travis-url]: https://travis-ci.org/mulesoft-labs/node-raml-validate
+[coveralls-image]: https://img.shields.io/coveralls/mulesoft-labs/node-raml-validate.svg?style=flat
+[coveralls-url]: https://coveralls.io/r/mulesoft-labs/node-raml-validate?branch=master
