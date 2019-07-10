@@ -1653,7 +1653,7 @@ describe('raml-validate', function () {
       expect(schema({ lat: '123', lng: '123' }).valid).to.equal(true)
     })
 
-    it.only('should only add rules to a single instance', function () {
+    it('should only add rules to a single instance', function () {
       validate.TYPES.test = function () {}
       validate.RULES.test = function () {}
 
