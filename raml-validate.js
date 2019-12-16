@@ -308,7 +308,7 @@ function toValidationRAML10 (config) {
       result = validations[i].validate(value)
       if (result.isOk()) break
     }
-    var error = result.getErrors()[0]
+    var error = result.getErrors().find(e => ['NULL_EXPECTED', 'ARRAY_AGAINST_UNKNOWN'].indexOf(e.code) === -1);
     var errorSource = error && error.getSource()
     var errorKey = (errorSource && errorSource.facetName) ? errorSource.facetName() : undefined
     var errorValue = (errorSource && errorSource.facetName) ? errorSource.value() : undefined
@@ -327,9 +327,14 @@ function toValidationRAML10 (config) {
       errorKey = 'type'
       errorValue = 'unknown'
     }
+    console.log('toto')
 
     if (value == null) {
       return toValidationObject(isOptional, key, value, 'required', !isOptional)
+    }
+
+    if(!error){
+      return toValidationObject(true, key, value)
     }
 
     return toValidationObject(result.isOk(), key, value, errorKey, errorValue)
