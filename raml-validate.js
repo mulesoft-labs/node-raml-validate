@@ -327,7 +327,6 @@ function toValidationRAML10 (config) {
       errorKey = 'type'
       errorValue = 'unknown'
     }
-    console.log('toto')
 
     if (value == null) {
       return toValidationObject(isOptional, key, value, 'required', !isOptional)
