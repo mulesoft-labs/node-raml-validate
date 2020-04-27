@@ -574,11 +574,11 @@ var RAML10TESTS = [
     },
     false,
     [{
-      'attr': 'date-only',
-      'key': 'date',
-      'rule': 'type',
-      'valid': false,
-      'value': '2016-10-07T21:00:00'
+      attr: 'date-only',
+      key: 'date',
+      rule: 'type',
+      valid: false,
+      value: '2016-10-07T21:00:00'
     }]
   ],
   [
@@ -604,11 +604,11 @@ var RAML10TESTS = [
     },
     false,
     [{
-      'attr': 'time-only',
-      'key': 'date',
-      'rule': 'type',
-      'valid': false,
-      'value': '2016-10-07T21:00:00'
+      attr: 'time-only',
+      key: 'date',
+      rule: 'type',
+      valid: false,
+      value: '2016-10-07T21:00:00'
     }]
   ],
   [
@@ -634,11 +634,11 @@ var RAML10TESTS = [
     },
     false,
     [{
-      'attr': 'datetime-only',
-      'key': 'date',
-      'rule': 'type',
-      'valid': false,
-      'value': '2016-10-07'
+      attr: 'datetime-only',
+      key: 'date',
+      rule: 'type',
+      valid: false,
+      value: '2016-10-07'
     }]
   ],
   [
@@ -1031,7 +1031,7 @@ var RAML10TESTS = [
       type: 'array',
       items: 'integer'
     },
-    [ 1, 2, 3 ],
+    [1, 2, 3],
     true,
     []
   ],
@@ -1040,7 +1040,7 @@ var RAML10TESTS = [
       type: 'array',
       items: 'integer'
     },
-    [ 'a', 'b', 'c' ],
+    ['a', 'b', 'c'],
     false,
     [
       {
@@ -1095,7 +1095,7 @@ var RAML10TESTS = [
       type: 'array',
       items: 'object'
     },
-    [ {}, {}, {} ],
+    [{}, {}, {}],
     true,
     []
   ],
@@ -1104,7 +1104,7 @@ var RAML10TESTS = [
       type: 'array',
       items: 'object'
     },
-    [ 'a', 'b', 'c' ],
+    ['a', 'b', 'c'],
     false,
     [
       {

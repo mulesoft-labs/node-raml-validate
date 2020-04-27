@@ -157,7 +157,7 @@ function toValidationFunction (config, rules) {
 
   // Iterate over the keys and dynamically push validation rules.
   Object.keys(config).forEach(function (rule) {
-    if (rules.hasOwnProperty(rule)) {
+    if (Object.prototype.hasOwnProperty.call(rules, rule)) {
       fns.push([rule, rules[rule](config[rule], rule), config[rule]])
     }
   })
@@ -283,7 +283,7 @@ function toValidationRAML10 (config) {
   var isOptional = false
   // Whether this is a 'union' type as defined in datatype-expansion's algorithm
   // https://github.com/raml-org/raml-parser-toolbelt/blob/master/tools/datatype-expansion/doc/algorithms.md
-  var isUnion = (config.type === 'union' && config.hasOwnProperty('anyOf'))
+  var isUnion = (config.type === 'union' && Object.prototype.hasOwnProperty.call(config, 'anyOf'))
   var configs = isUnion ? config.anyOf : [config]
 
   // Allow short-circuiting of non-required values.
